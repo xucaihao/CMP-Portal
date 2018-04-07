@@ -21,42 +21,97 @@ class BaseClient {
      */
     private static final RestTemplate restTemplate = new RestTemplate();
 
-    static <T> ResponseEntity<T> get(String url, Map<String, String> headerMap, Class<T> clz) {
+    /**
+     * http GET 方法
+     *
+     * @param url       url
+     * @param headerMap http请求体头部
+     * @param clz       返回体类型
+     * @param <T>       T
+     * @return 返回数据
+     */
+    protected static <T> ResponseEntity<T> get(String url, Map<String, String> headerMap, Class<T> clz) {
         HttpEntity<String> entity = buildHttpEntity(headerMap);
         String formatUrl = formatUrl(url, "GET", null);
         return restTemplate.exchange(formatUrl, HttpMethod.GET, entity, clz);
     }
 
-    static void delete(String url, Map<String, String> headerMap) {
+    /**
+     * http DELETE 方法
+     *
+     * @param url       url
+     * @param headerMap http请求头部
+     */
+    protected static ResponseEntity delete(String url, Map<String, String> headerMap) {
         HttpEntity<String> entity = buildHttpEntity(headerMap);
         String formatUrl = formatUrl(url, "DELETE", null);
-        restTemplate.exchange(formatUrl, HttpMethod.DELETE, entity, Void.class);
+        return restTemplate.exchange(formatUrl, HttpMethod.DELETE, entity, String.class);
     }
 
-    static <T> ResponseEntity<T> post(String url, String body, Map<String, String> headerMap, Class<T> clz) {
+    /**
+     * http POST 方法（带返回体）
+     *
+     * @param url       url
+     * @param body      请求体
+     * @param headerMap 请求体头部
+     * @param clz       返回类型
+     * @param <T>       T
+     * @return 返回数据
+     */
+    protected static <T> ResponseEntity<T> post(String url, String body, Map<String, String> headerMap, Class<T> clz) {
         HttpEntity<String> entity = buildHttpEntity(body, headerMap);
         String formatUrl = formatUrl(url, "POST", body);
         return restTemplate.exchange(formatUrl, HttpMethod.POST, entity, clz);
     }
 
-    static void post(String url, String body, Map<String, String> headerMap) {
+    /**
+     * http POST 方法（不带返回体）
+     *
+     * @param url       url
+     * @param body      请求体
+     * @param headerMap 请求体头部
+     */
+    protected static void post(String url, String body, Map<String, String> headerMap) {
         HttpEntity<String> entity = buildHttpEntity(body, headerMap);
         String formatUrl = formatUrl(url, "POST", body);
         restTemplate.exchange(formatUrl, HttpMethod.POST, entity, Void.class);
     }
 
-    static <T> ResponseEntity<T> put(String url, String body, Map<String, String> headerMap, Class<T> clz) {
+    /**
+     * http PUT 方法（带返回体）
+     *
+     * @param url       url
+     * @param body      请求体
+     * @param headerMap 请求体头部
+     * @param clz       返回类型
+     * @param <T>       T
+     * @return 返回数据
+     */
+    protected static <T> ResponseEntity<T> put(String url, String body, Map<String, String> headerMap, Class<T> clz) {
         HttpEntity<String> entity = buildHttpEntity(body, headerMap);
         String formatUrl = formatUrl(url, "PUT", body);
         return restTemplate.exchange(formatUrl, HttpMethod.PUT, entity, clz);
     }
 
-    static void put(String url, String body, Map<String, String> headerMap) {
+    /**
+     * http PUT 方法（不带返回体）
+     *
+     * @param url       url
+     * @param body      请求体
+     * @param headerMap 请求体头部
+     */
+    protected static void put(String url, String body, Map<String, String> headerMap) {
         HttpEntity<String> entity = buildHttpEntity(body, headerMap);
         String formatUrl = formatUrl(url, "PUT", body);
         restTemplate.exchange(formatUrl, HttpMethod.PUT, entity, Void.class);
     }
 
+    /**
+     * 生成HttpEntity(设置http头部)
+     *
+     * @param headerMap 头部参数
+     * @return HttpEntity
+     */
     private static HttpEntity<String> buildHttpEntity(Map<String, String> headerMap) {
         HttpEntityUtil httpEntityUtil = new HttpEntityUtil();
         if (null != headerMap) {
@@ -65,6 +120,13 @@ class BaseClient {
         return httpEntityUtil.buildHttpEntity();
     }
 
+    /**
+     * 生成HttpEntity(设置http头部、请求体)
+     *
+     * @param body      请求体
+     * @param headerMap 头部参数
+     * @return HttpEntity
+     */
     private static HttpEntity<String> buildHttpEntity(String body, Map<String, String> headerMap) {
         HttpEntityUtil httpEntityUtil = new HttpEntityUtil();
         if (null != headerMap) {
@@ -73,6 +135,14 @@ class BaseClient {
         return httpEntityUtil.buildHttpEntity(body);
     }
 
+    /**
+     * 组装http请求路径/打印日志
+     *
+     * @param url    url
+     * @param method http方法
+     * @param body   请求体
+     * @return http请求路径
+     */
     private static String formatUrl(String url, String method, String body) {
         String formatUrl = CORE_ENDPOINT + url;
         logger.info("{}:{}", method, formatUrl);

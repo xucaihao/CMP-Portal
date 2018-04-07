@@ -12,7 +12,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 public class HttpEntityUtil {
 
-    private HttpHeaders headers;
+    private HttpHeaders headers = new HttpHeaders();
 
     /**
      * 初始换http请求头部

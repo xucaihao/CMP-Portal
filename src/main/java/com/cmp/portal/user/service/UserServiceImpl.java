@@ -1,17 +1,72 @@
 package com.cmp.portal.user.service;
 
 import com.cmp.portal.common.CoreWsClient;
+import com.cmp.portal.common.ExceptionUtil;
+import com.cmp.portal.common.JsonUtil;
 import com.cmp.portal.user.model.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.cmp.portal.user.model.req.ReqUser;
+import com.cmp.portal.user.model.res.ResUser;
+import com.cmp.portal.user.model.res.ResUsers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+    /**
+     * 获取登录用户信息
+     *
+     * @param user 登录信息
+     * @return 用户信息
+     */
+    @Override
+    public ResponseEntity<ResUser> describeLoginUser(ReqUser user) {
+        try {
+            String url = "/users/loginInformation";
+            String body = JsonUtil.objectToString(user);
+            return CoreWsClient.post(url, body, ResUser.class);
+        } catch (Exception e) {
+            ExceptionUtil.dealThrowable(e);
+            return null;
+        }
+    }
+
+    /**
+     * 用户注册
+     *
+     * @param user 用户信息
+     */
+    @Override
+    public ResponseEntity registerUser(ReqUser user) {
+        try {
+            String url = "/users";
+            String body = JsonUtil.objectToString(user);
+            return CoreWsClient.post(url, body, String.class);
+        } catch (Exception e) {
+            ExceptionUtil.dealThrowable(e);
+            return null;
+        }
+    }
+
+    /**
+     * 用户更新
+     *
+     * @param user    用户
+     * @param reqUser 用户信息
+     * @param userId  用户id
+     * @return 更新后用户信息
+     */
+    @Override
+    public ResponseEntity<ResUser> updateUser(User user, ReqUser reqUser, String userId) {
+        try {
+            String url = "/users/" + userId;
+            String body = JsonUtil.objectToString(reqUser);
+            return CoreWsClient.put(user, url, body, null, ResUser.class);
+        } catch (Exception e) {
+            ExceptionUtil.dealThrowable(e);
+            return null;
+        }
+    }
 
     /**
      * 查询用户列表
@@ -20,17 +75,49 @@ public class UserServiceImpl implements UserService {
      * @return 用户列表
      */
     @Override
-    public ResponseEntity<User> describeUsers(User user) {
-        String url = "";
+    public ResponseEntity<ResUsers> describeUsers(User user) {
         try {
-            return CoreWsClient.get(user, url, null, User.class);
+            String url = "/users";
+            return CoreWsClient.get(user, url, null, ResUsers.class);
         } catch (Exception e) {
-            logger.error("", e);
-            if (e instanceof HttpClientErrorException) {
-                String msg = ((HttpClientErrorException) e).getMessage();
-                throw new CmpException(msg);
-            }
-            throw new CmpException(e);
+            ExceptionUtil.dealThrowable(e);
+            return null;
+        }
+    }
+
+    /**
+     * 根据id查询指定用户
+     *
+     * @param user   用户
+     * @param userId 用户id
+     * @return 指定用户
+     */
+    @Override
+    public ResponseEntity<ResUser> describeUserAttribute(User user, String userId) {
+        try {
+            String url = "/users/" + userId;
+            return CoreWsClient.get(user, url, null, ResUser.class);
+        } catch (Exception e) {
+            ExceptionUtil.dealThrowable(e);
+            return null;
+        }
+    }
+
+    /**
+     * 删除用户
+     *
+     * @param user   用户
+     * @param userId 用户id
+     * @return 操作结果
+     */
+    @Override
+    public ResponseEntity deleteUser(User user, String userId) {
+        try {
+            String url = "/users/" + userId;
+            return CoreWsClient.delete(user, url, null);
+        } catch (Exception e) {
+            ExceptionUtil.dealThrowable(e);
+            return null;
         }
     }
 }
