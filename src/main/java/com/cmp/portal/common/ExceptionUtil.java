@@ -13,9 +13,9 @@ public class ExceptionUtil {
         String method = traceElement.getMethodName().contains("lambda")
                 ? traceElement.getMethodName().split("\\$")[1] : traceElement.getMethodName();
         final String log = traceElement.getFileName().replace(".java", "") + "::" + method;
-        logger.info("invoke: {}, error: {}", log, e);
+        logger.error("invoke: {}, error: {}", log, e);
         if (e instanceof HttpClientErrorException) {
-            String msg = ((HttpClientErrorException) e).getMessage();
+            String msg = ((HttpClientErrorException) e).getResponseBodyAsString();
             throw new PortalException(msg);
         }
         throw new PortalException(e);

@@ -2,7 +2,7 @@ package com.cmp.portal.common;
 
 public class Constance {
 
-    public static final String CORE_ENDPOINT = "http://127.0.0.1:8080";
+    public static final String CORE_ENDPOINT = "http://127.0.0.1:13100";
     public static final String X_AUTH_TOKEN = "X-Auth-Token";
     public static final String HTTP_MSG_TYPE = "application/json;charset=UTF-8";
     public static final String HEADER_CLOUD_ID = "CMP-Cloud-Id";

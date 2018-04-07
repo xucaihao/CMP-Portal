@@ -8,6 +8,7 @@ import com.cmp.portal.user.model.res.ResUser;
 import com.cmp.portal.user.model.res.ResUsers;
 import com.cmp.portal.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Controller
 @RequestMapping("")
@@ -45,13 +46,11 @@ public class UserController {
     @RequestMapping("/login")
     public ModelAndView login(String account, String password) {
         try {
-            HttpSession session = WebUtil.session();
             ReqUser user = new ReqUser();
             user.setUserName(account);
             user.setPassword(password);
-//            user.setUserName("admin");
-//            user.setPassword("cmproot");
             ResUser loginUser = userService.describeLoginUser(user).getBody();
+            HttpSession session = WebUtil.session();
             session.setAttribute("user", loginUser);
             return new ModelAndView("index.html");
         } catch (Exception e) {
@@ -59,12 +58,41 @@ public class UserController {
         }
     }
 
+    /**
+     * 注册用户
+     *
+     * @param user 用户
+     * @return 操作结果
+     */
     @RequestMapping(value = "/users/register")
     @ResponseBody
     public ResponseData registerUser(ReqUser user) {
         try {
-            userService.registerUser(user);
-            return ResponseData.build(NO_CONTENT.value(), null);
+            ResponseEntity responseEntity = userService.registerUser(user);
+            return ResponseData.build(responseEntity.getStatusCodeValue(), null);
+        } catch (Exception e) {
+            return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
+        }
+    }
+
+    /**
+     * 修改用户
+     *
+     * @param reqUser 用户
+     * @return 操作结果
+     */
+    @RequestMapping(value = "/users/{userId}/update")
+    @ResponseBody
+    public ResponseData updateUser(ReqUser reqUser, @PathVariable String userId) {
+        try {
+            User user = WebUtil.getCurrentUser();
+            ResponseEntity<ResUser> response = userService.updateUser(user, reqUser, userId);
+            ResUser resUser = response.getBody();
+            if (userId.equals(user.getUserId())) {
+                HttpSession session = WebUtil.session();
+                session.setAttribute("user", resUser);
+            }
+            return ResponseData.build(response.getStatusCodeValue(), null);
         } catch (Exception e) {
             return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
         }
@@ -80,8 +108,8 @@ public class UserController {
     public ResponseData<ResUsers> describeUsers() {
         try {
             User user = WebUtil.getCurrentUser();
-            ResUsers users = userService.describeUsers(user).getBody();
-            return ResponseData.build(OK.value(), users);
+            ResponseEntity<ResUsers> response = userService.describeUsers(user);
+            return ResponseData.build(response.getStatusCodeValue(), response.getBody());
         } catch (Exception e) {
             return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
         }
@@ -98,12 +126,29 @@ public class UserController {
     public ResponseData<ResUser> describeUserAttribute(@PathVariable String userId) {
         try {
             User user = WebUtil.getCurrentUser();
-            ResUser resUser = userService.describeUserAttribute(user, userId).getBody();
-            return ResponseData.build(OK.value(), resUser);
+            ResponseEntity<ResUser> response = userService.describeUserAttribute(user, userId);
+            return ResponseData.build(response.getStatusCodeValue(), response.getBody());
         } catch (Exception e) {
             return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
         }
     }
 
+    /**
+     * 删除用户
+     *
+     * @param userId 用户id
+     * @return 操作结果
+     */
+    @RequestMapping("/users/{userId}/delete")
+    @ResponseBody
+    public ResponseData deleteUser(@PathVariable String userId) {
+        try {
+            User user = WebUtil.getCurrentUser();
+            ResponseEntity response = userService.deleteUser(user, userId);
+            return ResponseData.build(response.getStatusCodeValue(), null);
+        } catch (Exception e) {
+            return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
+        }
+    }
 
 }

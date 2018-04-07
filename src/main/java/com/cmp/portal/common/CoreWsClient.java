@@ -37,13 +37,13 @@ public class CoreWsClient extends BaseClient {
      * @param url     url
      * @param cloudId 云id
      */
-    public static void delete(User user, String url, String cloudId) {
+    public static ResponseEntity delete(User user, String url, String cloudId) {
         Map<String, String> headerMap = makeHeader(user, cloudId);
-        delete(url, headerMap);
+        return delete(url, headerMap);
     }
 
     /**
-     * http POST 方法（主要用于验证用户登录、用户注册，header中不设置cloudId和token）
+     * http POST 方法（header中不设置cloudId和token）
      *
      * @param url  url
      * @param body 请求体

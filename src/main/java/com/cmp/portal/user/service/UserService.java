@@ -24,6 +24,16 @@ public interface UserService {
     ResponseEntity registerUser(ReqUser user);
 
     /**
+     * 用户更新
+     *
+     * @param user    用户
+     * @param reqUser 用户信息
+     * @param userId  用户id
+     * @return 更新后用户信息
+     */
+    ResponseEntity<ResUser> updateUser(User user, ReqUser reqUser, String userId);
+
+    /**
      * 查询用户列表
      *
      * @param user 用户
@@ -40,5 +50,12 @@ public interface UserService {
      */
     ResponseEntity<ResUser> describeUserAttribute(User user, String userId);
 
-
+    /**
+     * 删除用户
+     *
+     * @param user   用户
+     * @param userId 用户id
+     * @return 操作结果
+     */
+    ResponseEntity deleteUser(User user, String userId);
 }

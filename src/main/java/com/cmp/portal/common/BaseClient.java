@@ -42,10 +42,10 @@ class BaseClient {
      * @param url       url
      * @param headerMap http请求头部
      */
-    protected static void delete(String url, Map<String, String> headerMap) {
+    protected static ResponseEntity delete(String url, Map<String, String> headerMap) {
         HttpEntity<String> entity = buildHttpEntity(headerMap);
         String formatUrl = formatUrl(url, "DELETE", null);
-        restTemplate.exchange(formatUrl, HttpMethod.DELETE, entity, Void.class);
+        return restTemplate.exchange(formatUrl, HttpMethod.DELETE, entity, String.class);
     }
 
     /**

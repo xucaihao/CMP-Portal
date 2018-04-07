@@ -39,14 +39,29 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity registerUser(ReqUser user) {
         try {
-//            user.setUserName("xu");
-//            user.setPassword("123");
-//            user.setEmail("qq");
-//            user.setPhone("111");
             String url = "/users";
             String body = JsonUtil.objectToString(user);
-            ResponseEntity<String> post = CoreWsClient.post(url, body, String.class);
-            return post;
+            return CoreWsClient.post(url, body, String.class);
+        } catch (Exception e) {
+            ExceptionUtil.dealThrowable(e);
+            return null;
+        }
+    }
+
+    /**
+     * 用户更新
+     *
+     * @param user    用户
+     * @param reqUser 用户信息
+     * @param userId  用户id
+     * @return 更新后用户信息
+     */
+    @Override
+    public ResponseEntity<ResUser> updateUser(User user, ReqUser reqUser, String userId) {
+        try {
+            String url = "/users/" + userId;
+            String body = JsonUtil.objectToString(reqUser);
+            return CoreWsClient.put(user, url, body, null, ResUser.class);
         } catch (Exception e) {
             ExceptionUtil.dealThrowable(e);
             return null;
@@ -88,4 +103,21 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * 删除用户
+     *
+     * @param user   用户
+     * @param userId 用户id
+     * @return 操作结果
+     */
+    @Override
+    public ResponseEntity deleteUser(User user, String userId) {
+        try {
+            String url = "/users/" + userId;
+            return CoreWsClient.delete(user, url, null);
+        } catch (Exception e) {
+            ExceptionUtil.dealThrowable(e);
+            return null;
+        }
+    }
 }
