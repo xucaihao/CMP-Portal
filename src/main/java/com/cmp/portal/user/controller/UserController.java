@@ -36,6 +36,10 @@ public class UserController {
         return new ModelAndView("login.html");
     }
 
+    @RequestMapping("index")
+    public ModelAndView toIndexPage() {
+        return new ModelAndView("index.html");
+    }
     /**
      * 用户登录
      *
@@ -49,7 +53,12 @@ public class UserController {
             ReqUser user = new ReqUser();
             user.setUserName(account);
             user.setPassword(password);
-            ResUser loginUser = userService.describeLoginUser(user).getBody();
+//            ResUser loginUser = userService.describeLoginUser(user).getBody();
+            //假使通过
+            ResUser loginUser = new ResUser();
+            User u = new User();
+            u.setUserName(account);
+            loginUser.setUser(u);
             HttpSession session = WebUtil.session();
             session.setAttribute("user", loginUser);
             return new ModelAndView("index.html");

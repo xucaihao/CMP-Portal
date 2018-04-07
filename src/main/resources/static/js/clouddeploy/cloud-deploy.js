@@ -48,12 +48,13 @@ $(function () {
             success: function (data, status) {
                 debugger
                 if (status == "success") {
+                    Ewin.showMsg('success', '纳管成功！');
                     $("#cloudDeployTable").bootstrapTable('refresh', {url: "../cloudDeploy/findCloudDeployList"});
                 }
                 $('.portal-loading').hide();
             },
             error: function () {
-                Ewin.showMsg('error', '申请失败！');
+                Ewin.showMsg('error', '纳管失败！');
                 $('.portal-loading').hide();
             }
         });
@@ -121,7 +122,7 @@ $(function () {
 
     function operateFormatter(value, row, index) {
         return [
-            '<a class="RoleOfDelete fa fa-trash-o" onclick="deleteCloudDeploy(row.id)"></a>'
+            '<a class="RoleOfDelete fa fa-trash-o"></a>'
         ].join('');
     }
 
@@ -159,7 +160,6 @@ $(function () {
                         $('.portal-loading').hide();
                     },
                     error: function () {
-                        for (var x = 0; x < 4000000000; x++);
                         $('.portal-loading').hide();
                         Ewin.showMsg('error', '删除云失败！');
                     }
