@@ -10,18 +10,52 @@ public class ResponseData<T> {
 
     private String msg;
 
+    private ResponseData(int code, String msg) {
+        this.code = code;
+        this.msg = msg;
+    }
+
+    private ResponseData(T data, String msg) {
+        this.data = data;
+        this.msg = msg;
+    }
+
     private ResponseData(int code, T data, String msg) {
         this.code = code;
         this.data = data;
         this.msg = msg;
     }
 
-    public static <T> ResponseData<T> build(int code, T data) {
+    public static <T> ResponseData<T> success(int code) {
+        return new ResponseData<>(code, "Success");
+    }
+
+    public static <T> ResponseData<T> success(T data) {
+        return new ResponseData<>(data, "Success");
+    }
+
+    public static <T> ResponseData<T> success(int code, T data) {
         return new ResponseData<>(code, data, "Success");
     }
 
+    public static <T> ResponseData<T> warning() {
+        return new ResponseData<>(null, "Warning");
+    }
+
+    public static <T> ResponseData<T> warning(T data) {
+        return new ResponseData<>(data, "Warning");
+    }
+
     public static <T> ResponseData<T> failure() {
-        return new ResponseData<>(BAD_REQUEST.value(), null, "Failure");
+        return new ResponseData<>(null, "Failure");
+    }
+
+    public static <T> ResponseData<T> failure(int code) {
+        return new ResponseData<>(code, null, "Failure");
+    }
+
+    public static <T> ResponseData<T> failure(int code, T data) {
+        return new ResponseData<>(code, null, "Failure");
     }
 
     public static <T> ResponseData<T> failure(int code, String msg) {

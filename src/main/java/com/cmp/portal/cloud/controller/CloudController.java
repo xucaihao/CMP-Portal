@@ -19,13 +19,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import org.springframework.web.bind.annotation.ResponseBody;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
+import static com.cmp.portal.common.Constance.TIME_OUT_SECONDS;
+import static java.util.stream.Collectors.toList;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @Controller
 @RequestMapping("")
@@ -45,7 +46,7 @@ public class CloudController {
         try {
             User user = WebUtil.getCurrentUser();
             ResponseEntity<ResCloudTypes> response = cloudService.describeCloudTypes(user);
-            return ResponseData.build(response.getStatusCodeValue(), response.getBody());
+            return ResponseData.success(response.getStatusCodeValue(), response.getBody());
         } catch (Exception e) {
             return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
         }
@@ -63,7 +64,7 @@ public class CloudController {
         try {
             User user = WebUtil.getCurrentUser();
             ResponseEntity responseEntity = cloudService.updateCloudType(user, reqModCloudType);
-            return ResponseData.build(responseEntity.getStatusCodeValue(), null);
+            return ResponseData.success(responseEntity.getStatusCodeValue(), null);
         } catch (Exception e) {
             return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
         }
@@ -80,7 +81,7 @@ public class CloudController {
         try {
             User user = WebUtil.getCurrentUser();
             ResponseEntity<ResClouds> response = cloudService.describeClouds(user);
-            return ResponseData.build(response.getStatusCodeValue(), response.getBody());
+            return ResponseData.success(response.getStatusCodeValue(), response.getBody());
         } catch (Exception e) {
             return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
         }
@@ -98,7 +99,7 @@ public class CloudController {
         try {
             User user = WebUtil.getCurrentUser();
             ResponseEntity<ResCloud> response = cloudService.describeCloudAttribute(user, cloudId);
-            return ResponseData.build(response.getStatusCodeValue(), response.getBody());
+            return ResponseData.success(response.getStatusCodeValue(), response.getBody());
         } catch (Exception e) {
             return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
         }
@@ -116,7 +117,7 @@ public class CloudController {
         try {
             User user = WebUtil.getCurrentUser();
             ResponseEntity response = cloudService.createCloud(user, reqCreCloud);
-            return ResponseData.build(response.getStatusCodeValue(), null);
+            return ResponseData.success(response.getStatusCodeValue(), null);
         } catch (Exception e) {
             return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
         }
@@ -135,19 +136,83 @@ public class CloudController {
         try {
             User user = WebUtil.getCurrentUser();
             ResponseEntity response = cloudService.modifyCloudAttribute(user, reqModCloud, cloudId);
-            return ResponseData.build(response.getStatusCodeValue(), null);
+            return ResponseData.success(response.getStatusCodeValue(), null);
         } catch (Exception e) {
             return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
         }
     }
 
+    /**
+     * 删除云
+     *
+     * @param cloudId 云id
+     * @return 操作结果
+     */
     @RequestMapping("/clouds/{cloudId}/delete")
     @ResponseBody
     public ResponseData deleteCloud(@PathVariable String cloudId) {
         try {
             User user = WebUtil.getCurrentUser();
             ResponseEntity response = cloudService.deleteCloud(user, cloudId);
-            return ResponseData.build(response.getStatusCodeValue(), null);
+            return ResponseData.success(response.getStatusCodeValue(), null);
+        } catch (Exception e) {
+            return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
+        }
+    }
+
+    /**
+     * 批量删除云
+     *
+     * @param cloudIds 删除云id列表
+     * @return 操作结果
+     */
+    @RequestMapping("/clouds/delete")
+    @ResponseBody
+    public ResponseData deleteClouds(List<String> cloudIds) {
+        try {
+            User user = WebUtil.getCurrentUser();
+            List<CompletableFuture<Map<String, String>>> futures = cloudIds.stream().map(cloudId ->
+                    CompletableFuture.supplyAsync(() -> {
+                        Map<String, String> response = new HashMap<>(16);
+                        try {
+                            cloudService.deleteCloud(user, cloudId);
+                            response.put("code", "success");
+                            response.put("msg", "");
+                            return response;
+                        } catch (Exception e) {
+                            response.put("code", "fail");
+                            response.put("msg", e.getMessage());
+                            return response;
+                        }
+                    })).collect(toList());
+            List<Map<String, String>> failedDel = futures.stream().map(vo -> {
+                try {
+                    return vo.get(TIME_OUT_SECONDS, TimeUnit.SECONDS);
+                } catch (Exception e) {
+                    return null;
+                }
+            }).filter(x -> null != x && "fail".equals(x.get("code"))).collect(toList());
+            int delNum = cloudIds.size();
+            int failedNum = failedDel.size();
+            int successNum = delNum - failedNum;
+            Map<String, Object> resMap = new HashMap<>(16);
+            //删除一朵云失败，直接返回失败信息
+            if (1 == delNum && 1 == failedNum) {
+                return ResponseData.failure(BAD_REQUEST.value(), failedDel.get(0).get("msg"));
+            } else {
+                resMap.put("successNum", successNum);
+                resMap.put("failNum", failedNum);
+                //全部删除成功
+                if (delNum == successNum) {
+                    return ResponseData.success(NO_CONTENT.value(), resMap);
+                } else if (delNum == failedNum) {
+                    //删除多朵云，全部删除失败
+                    return ResponseData.failure(BAD_REQUEST.value(), resMap);
+                } else {
+                    //删除多朵云，部分成功
+                    return ResponseData.warning(resMap);
+                }
+            }
         } catch (Exception e) {
             return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
         }
@@ -193,12 +258,12 @@ public class CloudController {
 
     @RequestMapping("cloudDeploy/deleteCloudDeploy")
     @ResponseBody
-    public ResData deleteCloudDeploy(@RequestParam(name="ids[]")List<Integer> ids) {
-        for(Integer id: ids) {
+    public ResData deleteCloudDeploy(@RequestParam(name = "ids[]") List<Integer> ids) {
+        for (Integer id : ids) {
             Iterator it = datas.iterator();
             while (it.hasNext()) {
                 CloudEntity data = (CloudEntity) it.next();
-                if (data.getId()== id) {
+                if (data.getId() == id) {
                     it.remove();
                     break;
                 }
@@ -221,7 +286,7 @@ public class CloudController {
         Iterator it = datas.iterator();
         while (it.hasNext()) {
             CloudEntity data = (CloudEntity) it.next();
-            if (data.getId()== cloud.getId()) {
+            if (data.getId() == cloud.getId()) {
                 data = cloud;
                 break;
             }

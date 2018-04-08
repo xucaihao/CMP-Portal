@@ -9,7 +9,7 @@ public class Constance {
     public static final String CLIENT_ADDRESS = "ClientAddress";
 
     public static final String CMP_V1 = "/cmpv1.0";
-    public static final int TIME_OUT_SECONDS = 10;
+    public static final int TIME_OUT_SECONDS = 30;
 
 
     public static final String HEADER_CLOUD_INFO = "CMP-Cloud-Info";

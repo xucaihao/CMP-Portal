@@ -53,7 +53,7 @@ public class UserController {
     public ResponseData<ResUsers> describeOnlineUser() {
         MySessionListener listener = new MySessionListener();
         List<User> onlineUsers = listener.getOnlineUsers();
-        return ResponseData.build(OK.value(), new ResUsers(onlineUsers));
+        return ResponseData.success(OK.value(), new ResUsers(onlineUsers));
     }
 
     /**
@@ -106,7 +106,7 @@ public class UserController {
     public ResponseData registerUser(ReqUser user) {
         try {
             ResponseEntity responseEntity = userService.registerUser(user);
-            return ResponseData.build(responseEntity.getStatusCodeValue(), null);
+            return ResponseData.success(responseEntity.getStatusCodeValue(), null);
         } catch (Exception e) {
             return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
         }
@@ -129,7 +129,7 @@ public class UserController {
                 HttpSession session = WebUtil.session();
                 session.setAttribute("user", resUser.getUser());
             }
-            return ResponseData.build(response.getStatusCodeValue(), null);
+            return ResponseData.success(response.getStatusCodeValue(), null);
         } catch (Exception e) {
             return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
         }
@@ -146,7 +146,7 @@ public class UserController {
         try {
             User user = WebUtil.getCurrentUser();
             ResponseEntity<ResUsers> response = userService.describeUsers(user);
-            return ResponseData.build(response.getStatusCodeValue(), response.getBody());
+            return ResponseData.success(response.getStatusCodeValue(), response.getBody());
         } catch (Exception e) {
             return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
         }
@@ -164,7 +164,7 @@ public class UserController {
         try {
             User user = WebUtil.getCurrentUser();
             ResponseEntity<ResUser> response = userService.describeUserAttribute(user, userId);
-            return ResponseData.build(response.getStatusCodeValue(), response.getBody());
+            return ResponseData.success(response.getStatusCodeValue(), response.getBody());
         } catch (Exception e) {
             return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
         }
@@ -182,7 +182,7 @@ public class UserController {
         try {
             User user = WebUtil.getCurrentUser();
             ResponseEntity response = userService.deleteUser(user, userId);
-            return ResponseData.build(response.getStatusCodeValue(), null);
+            return ResponseData.success(response.getStatusCodeValue(), null);
         } catch (Exception e) {
             return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
         }
