@@ -1,5 +1,6 @@
 package com.cmp.portal.user.controller;
 
+import com.cmp.portal.common.MySessionListener;
 import com.cmp.portal.common.ResponseData;
 import com.cmp.portal.common.WebUtil;
 import com.cmp.portal.user.model.User;
@@ -16,8 +17,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.OK;
 
 @Controller
 @RequestMapping("")
@@ -40,6 +43,19 @@ public class UserController {
     public ModelAndView toIndexPage() {
         return new ModelAndView("index.html");
     }
+
+    /**
+     * 获取在线用户列表
+     *
+     * @return 在线用户列表
+     */
+    @RequestMapping("/onlineUser")
+    public ResponseData<ResUsers> describeOnlineUser() {
+        MySessionListener listener = new MySessionListener();
+        List<User> onlineUsers = listener.getOnlineUsers();
+        return ResponseData.build(OK.value(), new ResUsers(onlineUsers));
+    }
+
     /**
      * 用户登录
      *
@@ -53,15 +69,27 @@ public class UserController {
             ReqUser user = new ReqUser();
             user.setUserName(account);
             user.setPassword(password);
-//            ResUser loginUser = userService.describeLoginUser(user).getBody();
-            //假使通过
-            ResUser loginUser = new ResUser();
-            User u = new User();
-            u.setUserName(account);
-            loginUser.setUser(u);
+            ResUser loginUser = userService.describeLoginUser(user).getBody();
+            MySessionListener listener = new MySessionListener();
+            listener.setUser(loginUser.getUser());
             HttpSession session = WebUtil.session();
-            session.setAttribute("user", loginUser);
+            session.setAttribute("user", loginUser.getUser());
             return new ModelAndView("index.html");
+        } catch (Exception e) {
+            return new ModelAndView("error.html");
+        }
+    }
+
+    /**
+     * 用户登出
+     *
+     * @return 登录页面/失败页面
+     */
+    public ModelAndView logout() {
+        try {
+            HttpSession session = WebUtil.session();
+            session.invalidate();
+            return new ModelAndView("login.html");
         } catch (Exception e) {
             return new ModelAndView("error.html");
         }
@@ -99,7 +127,7 @@ public class UserController {
             ResUser resUser = response.getBody();
             if (userId.equals(user.getUserId())) {
                 HttpSession session = WebUtil.session();
-                session.setAttribute("user", resUser);
+                session.setAttribute("user", resUser.getUser());
             }
             return ResponseData.build(response.getStatusCodeValue(), null);
         } catch (Exception e) {
