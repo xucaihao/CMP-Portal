@@ -19,9 +19,6 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.OK;
-
 @Controller
 @RequestMapping("")
 public class UserController {
@@ -53,7 +50,7 @@ public class UserController {
     public ResponseData<ResUsers> describeOnlineUser() {
         MySessionListener listener = new MySessionListener();
         List<User> onlineUsers = listener.getOnlineUsers();
-        return ResponseData.success(OK.value(), new ResUsers(onlineUsers));
+        return ResponseData.success(new ResUsers(onlineUsers));
     }
 
     /**
@@ -85,6 +82,7 @@ public class UserController {
      *
      * @return 登录页面/失败页面
      */
+    @RequestMapping("/logout")
     public ModelAndView logout() {
         try {
             HttpSession session = WebUtil.session();
@@ -105,10 +103,10 @@ public class UserController {
     @ResponseBody
     public ResponseData registerUser(ReqUser user) {
         try {
-            ResponseEntity responseEntity = userService.registerUser(user);
-            return ResponseData.success(responseEntity.getStatusCodeValue(), null);
+            userService.registerUser(user);
+            return ResponseData.success();
         } catch (Exception e) {
-            return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
+            return ResponseData.failure(e.getMessage());
         }
     }
 
@@ -129,9 +127,9 @@ public class UserController {
                 HttpSession session = WebUtil.session();
                 session.setAttribute("user", resUser.getUser());
             }
-            return ResponseData.success(response.getStatusCodeValue(), null);
+            return ResponseData.success();
         } catch (Exception e) {
-            return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
+            return ResponseData.failure(e.getMessage());
         }
     }
 
@@ -146,9 +144,9 @@ public class UserController {
         try {
             User user = WebUtil.getCurrentUser();
             ResponseEntity<ResUsers> response = userService.describeUsers(user);
-            return ResponseData.success(response.getStatusCodeValue(), response.getBody());
+            return ResponseData.success(response.getBody());
         } catch (Exception e) {
-            return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
+            return ResponseData.failure(e.getMessage());
         }
     }
 
@@ -164,9 +162,9 @@ public class UserController {
         try {
             User user = WebUtil.getCurrentUser();
             ResponseEntity<ResUser> response = userService.describeUserAttribute(user, userId);
-            return ResponseData.success(response.getStatusCodeValue(), response.getBody());
+            return ResponseData.success(response.getBody());
         } catch (Exception e) {
-            return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
+            return ResponseData.failure(e.getMessage());
         }
     }
 
@@ -182,9 +180,9 @@ public class UserController {
         try {
             User user = WebUtil.getCurrentUser();
             ResponseEntity response = userService.deleteUser(user, userId);
-            return ResponseData.success(response.getStatusCodeValue(), null);
+            return ResponseData.success();
         } catch (Exception e) {
-            return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
+            return ResponseData.failure(e.getMessage());
         }
     }
 

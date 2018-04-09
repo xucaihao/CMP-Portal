@@ -25,8 +25,6 @@ import java.util.concurrent.TimeUnit;
 
 import static com.cmp.portal.common.Constance.TIME_OUT_SECONDS;
 import static java.util.stream.Collectors.toList;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @Controller
 @RequestMapping("")
@@ -46,9 +44,9 @@ public class CloudController {
         try {
             User user = WebUtil.getCurrentUser();
             ResponseEntity<ResCloudTypes> response = cloudService.describeCloudTypes(user);
-            return ResponseData.success(response.getStatusCodeValue(), response.getBody());
+            return ResponseData.success(response.getBody());
         } catch (Exception e) {
-            return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
+            return ResponseData.failure(e.getMessage());
         }
     }
 
@@ -63,10 +61,10 @@ public class CloudController {
     public ResponseData updateCloudType(ReqModCloudType reqModCloudType) {
         try {
             User user = WebUtil.getCurrentUser();
-            ResponseEntity responseEntity = cloudService.updateCloudType(user, reqModCloudType);
-            return ResponseData.success(responseEntity.getStatusCodeValue(), null);
+            cloudService.updateCloudType(user, reqModCloudType);
+            return ResponseData.success();
         } catch (Exception e) {
-            return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
+            return ResponseData.failure(e.getMessage());
         }
     }
 
@@ -81,9 +79,9 @@ public class CloudController {
         try {
             User user = WebUtil.getCurrentUser();
             ResponseEntity<ResClouds> response = cloudService.describeClouds(user);
-            return ResponseData.success(response.getStatusCodeValue(), response.getBody());
+            return ResponseData.success(response.getBody());
         } catch (Exception e) {
-            return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
+            return ResponseData.failure(e.getMessage());
         }
     }
 
@@ -99,9 +97,9 @@ public class CloudController {
         try {
             User user = WebUtil.getCurrentUser();
             ResponseEntity<ResCloud> response = cloudService.describeCloudAttribute(user, cloudId);
-            return ResponseData.success(response.getStatusCodeValue(), response.getBody());
+            return ResponseData.success(response.getBody());
         } catch (Exception e) {
-            return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
+            return ResponseData.failure(e.getMessage());
         }
     }
 
@@ -116,10 +114,10 @@ public class CloudController {
     public ResponseData createCloud(ReqCreCloud reqCreCloud) {
         try {
             User user = WebUtil.getCurrentUser();
-            ResponseEntity response = cloudService.createCloud(user, reqCreCloud);
-            return ResponseData.success(response.getStatusCodeValue(), null);
+            cloudService.createCloud(user, reqCreCloud);
+            return ResponseData.success();
         } catch (Exception e) {
-            return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
+            return ResponseData.failure(e.getMessage());
         }
     }
 
@@ -135,10 +133,10 @@ public class CloudController {
     public ResponseData modifyCloudAttribute(ReqModCloud reqModCloud, @PathVariable String cloudId) {
         try {
             User user = WebUtil.getCurrentUser();
-            ResponseEntity response = cloudService.modifyCloudAttribute(user, reqModCloud, cloudId);
-            return ResponseData.success(response.getStatusCodeValue(), null);
+            cloudService.modifyCloudAttribute(user, reqModCloud, cloudId);
+            return ResponseData.success();
         } catch (Exception e) {
-            return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
+            return ResponseData.failure(e.getMessage());
         }
     }
 
@@ -153,10 +151,10 @@ public class CloudController {
     public ResponseData deleteCloud(@PathVariable String cloudId) {
         try {
             User user = WebUtil.getCurrentUser();
-            ResponseEntity response = cloudService.deleteCloud(user, cloudId);
-            return ResponseData.success(response.getStatusCodeValue(), null);
+            cloudService.deleteCloud(user, cloudId);
+            return ResponseData.success();
         } catch (Exception e) {
-            return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
+            return ResponseData.failure(e.getMessage());
         }
     }
 
@@ -198,23 +196,23 @@ public class CloudController {
             Map<String, Object> resMap = new HashMap<>(16);
             //删除一朵云失败，直接返回失败信息
             if (1 == delNum && 1 == failedNum) {
-                return ResponseData.failure(BAD_REQUEST.value(), failedDel.get(0).get("msg"));
+                return ResponseData.failure(failedDel.get(0).get("msg"));
             } else {
                 resMap.put("successNum", successNum);
                 resMap.put("failNum", failedNum);
                 //全部删除成功
                 if (delNum == successNum) {
-                    return ResponseData.success(NO_CONTENT.value(), resMap);
+                    return ResponseData.success(resMap);
                 } else if (delNum == failedNum) {
                     //删除多朵云，全部删除失败
-                    return ResponseData.failure(BAD_REQUEST.value(), resMap);
+                    return ResponseData.failure(resMap);
                 } else {
                     //删除多朵云，部分成功
                     return ResponseData.warning(resMap);
                 }
             }
         } catch (Exception e) {
-            return ResponseData.failure(BAD_REQUEST.value(), e.getMessage());
+            return ResponseData.failure(e.getMessage());
         }
     }
 
