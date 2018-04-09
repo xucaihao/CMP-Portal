@@ -2,8 +2,10 @@ package com.cmp.portal.cloud.service;
 
 import com.cmp.portal.cloud.model.req.ReqCreCloud;
 import com.cmp.portal.cloud.model.req.ReqModCloud;
+import com.cmp.portal.cloud.model.req.ReqModCloudAdapter;
 import com.cmp.portal.cloud.model.req.ReqModCloudType;
 import com.cmp.portal.cloud.model.res.ResCloud;
+import com.cmp.portal.cloud.model.res.ResCloudAdapters;
 import com.cmp.portal.cloud.model.res.ResCloudTypes;
 import com.cmp.portal.cloud.model.res.ResClouds;
 import com.cmp.portal.user.model.User;
@@ -73,4 +75,20 @@ public interface CloudService {
      */
     ResponseEntity deleteCloud(User user, String cloudId);
 
+    /**
+     * 查询云适配组件列表
+     *
+     * @param user 用户
+     * @return 云适配组件列表
+     */
+    ResponseEntity<ResCloudAdapters> describeCloudAdapters(User user);
+
+    /**
+     * 更新适配组件路由地址
+     *
+     * @param user               用户
+     * @param reqModCloudAdapter 请求体
+     * @return 操作结果
+     */
+    ResponseEntity updateCloudAdapter(User user, ReqModCloudAdapter reqModCloudAdapter);
 }

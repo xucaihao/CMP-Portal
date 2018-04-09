@@ -2,8 +2,10 @@ package com.cmp.portal.cloud.service;
 
 import com.cmp.portal.cloud.model.req.ReqCreCloud;
 import com.cmp.portal.cloud.model.req.ReqModCloud;
+import com.cmp.portal.cloud.model.req.ReqModCloudAdapter;
 import com.cmp.portal.cloud.model.req.ReqModCloudType;
 import com.cmp.portal.cloud.model.res.ResCloud;
+import com.cmp.portal.cloud.model.res.ResCloudAdapters;
 import com.cmp.portal.cloud.model.res.ResCloudTypes;
 import com.cmp.portal.cloud.model.res.ResClouds;
 import com.cmp.portal.common.CoreWsClient;
@@ -138,6 +140,42 @@ public class CloudServiceImpl implements CloudService {
         try {
             String url = "/clouds/" + cloudId;
             return CoreWsClient.delete(user, url, null);
+        } catch (Exception e) {
+            ExceptionUtil.dealThrowable(e);
+            return null;
+        }
+    }
+
+    /**
+     * 查询云适配组件列表
+     *
+     * @param user 用户
+     * @return 云适配组件列表
+     */
+    @Override
+    public ResponseEntity<ResCloudAdapters> describeCloudAdapters(User user) {
+        try {
+            String url = "/clouds/adapters";
+            return CoreWsClient.get(user, url, null, ResCloudAdapters.class);
+        } catch (Exception e) {
+            ExceptionUtil.dealThrowable(e);
+            return null;
+        }
+    }
+
+    /**
+     * 更新适配组件路由地址
+     *
+     * @param user               用户
+     * @param reqModCloudAdapter 请求体
+     * @return 操作结果
+     */
+    @Override
+    public ResponseEntity updateCloudAdapter(User user, ReqModCloudAdapter reqModCloudAdapter) {
+        try {
+            String url = "/clouds/adapters/update";
+            String body = JsonUtil.objectToString(reqModCloudAdapter);
+            return CoreWsClient.put(user, url, body, null, String.class);
         } catch (Exception e) {
             ExceptionUtil.dealThrowable(e);
             return null;

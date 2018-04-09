@@ -1,9 +1,12 @@
 package com.cmp.portal.cloud.controller;
 
+import com.cmp.portal.cloud.model.CoreEndPoint;
 import com.cmp.portal.cloud.model.req.ReqCreCloud;
 import com.cmp.portal.cloud.model.req.ReqModCloud;
+import com.cmp.portal.cloud.model.req.ReqModCloudAdapter;
 import com.cmp.portal.cloud.model.req.ReqModCloudType;
 import com.cmp.portal.cloud.model.res.ResCloud;
+import com.cmp.portal.cloud.model.res.ResCloudAdapters;
 import com.cmp.portal.cloud.model.res.ResCloudTypes;
 import com.cmp.portal.cloud.model.res.ResClouds;
 import com.cmp.portal.cloud.service.CloudService;
@@ -32,6 +35,9 @@ public class CloudController {
 
     @Autowired
     private CloudService cloudService;
+
+    @Autowired
+    private CoreEndPoint coreEndPoint;
 
     /**
      * 获取所有可对接云平台类型
@@ -214,6 +220,71 @@ public class CloudController {
         } catch (Exception e) {
             return ResponseData.failure(e.getMessage());
         }
+    }
+
+    /**
+     * 查询云适配组件列表
+     *
+     * @return 云适配组件列表
+     */
+    @RequestMapping("/cloudAdapters")
+    @ResponseBody
+    public ResponseData<ResCloudAdapters> describeCloudAdapters() {
+        try {
+            User user = WebUtil.getCurrentUser();
+            ResponseEntity<ResCloudAdapters> response = cloudService.describeCloudAdapters(user);
+            return ResponseData.success(response.getBody());
+        } catch (Exception e) {
+            return ResponseData.failure(e.getMessage());
+        }
+    }
+
+    /**
+     * 更新适配组件路由地址
+     *
+     * @param reqModCloudAdapter 请求体
+     * @return 操作结果
+     */
+    @RequestMapping("/cloudAdapters/update")
+    @ResponseBody
+    public ResponseData updateCloudAdapter(ReqModCloudAdapter reqModCloudAdapter) {
+        try {
+            User user = WebUtil.getCurrentUser();
+            cloudService.updateCloudAdapter(user, reqModCloudAdapter);
+            return ResponseData.success();
+        } catch (Exception e) {
+            return ResponseData.failure(e.getMessage());
+        }
+    }
+
+    /**
+     * 修改core服务地址
+     *
+     * @param ip   ip
+     * @param port 端口号
+     * @return 操作结果
+     */
+    @RequestMapping("/coreEndpoint/update")
+    @ResponseBody
+    public ResponseData updateCoreEndpoint(String ip, String port) {
+        String endpoint = "http://" + ip + ":" + port;
+        boolean flag = coreEndPoint.updateEndpoint(endpoint);
+        if (flag) {
+            return ResponseData.success();
+        } else {
+            return ResponseData.failure();
+        }
+    }
+
+    /**
+     * 获取core服务地址
+     *
+     * @return core服务地址
+     */
+    @RequestMapping("/coreEndpoint")
+    @ResponseBody
+    public ResponseData getCoreEndpoint() {
+        return ResponseData.success(coreEndPoint);
     }
 
     //测试数据 只考虑单线程操作
