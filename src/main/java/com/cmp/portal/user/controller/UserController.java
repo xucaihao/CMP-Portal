@@ -4,6 +4,8 @@ import com.cmp.portal.common.MySessionListener;
 import com.cmp.portal.common.ResponseData;
 import com.cmp.portal.common.WebUtil;
 import com.cmp.portal.user.model.User;
+import com.cmp.portal.user.model.req.ReqAddMapping;
+import com.cmp.portal.user.model.req.ReqModMapping;
 import com.cmp.portal.user.model.req.ReqUser;
 import com.cmp.portal.user.model.res.ResUser;
 import com.cmp.portal.user.model.res.ResUsers;
@@ -179,7 +181,62 @@ public class UserController {
     public ResponseData deleteUser(@PathVariable String userId) {
         try {
             User user = WebUtil.getCurrentUser();
-            ResponseEntity response = userService.deleteUser(user, userId);
+            userService.deleteUser(user, userId);
+            return ResponseData.success();
+        } catch (Exception e) {
+            return ResponseData.failure(e.getMessage());
+        }
+    }
+
+    /**
+     * 添加用户映射关系
+     *
+     * @param mapping 请求体
+     * @return 操作结果
+     */
+    @RequestMapping(value = "/userMappings/add")
+    @ResponseBody
+    public ResponseData addUserMapping(ReqAddMapping mapping) {
+        try {
+            User user = WebUtil.getCurrentUser();
+            userService.addUserMapping(user, mapping);
+            return ResponseData.success();
+        } catch (Exception e) {
+            return ResponseData.failure(e.getMessage());
+        }
+    }
+
+    /**
+     * 修改用户映射关系
+     *
+     * @param mapping   请求体
+     * @param mappingId 映射id
+     * @return 操作结果
+     */
+    @RequestMapping(value = "/userMappings/{mappingId}/update")
+    @ResponseBody
+    public ResponseData updateUserMapping(ReqModMapping mapping, @PathVariable String mappingId) {
+        try {
+            User user = WebUtil.getCurrentUser();
+            userService.updateUserMapping(user, mapping, mappingId);
+            return ResponseData.success();
+        } catch (Exception e) {
+            return ResponseData.failure(e.getMessage());
+        }
+    }
+
+    /**
+     * 删除用户映射关系
+     *
+     * @param mappingId 映射id
+     * @return 操作结果
+     */
+    @RequestMapping("/userMappings/{mappingId}/delete")
+    @ResponseBody
+    public ResponseData deleteUserMappingById(@PathVariable String mappingId) {
+        try {
+            User user = WebUtil.getCurrentUser();
+            userService.deleteUserMappingById(user, mappingId);
             return ResponseData.success();
         } catch (Exception e) {
             return ResponseData.failure(e.getMessage());

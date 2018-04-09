@@ -1,6 +1,8 @@
 package com.cmp.portal.user.service;
 
 import com.cmp.portal.user.model.User;
+import com.cmp.portal.user.model.req.ReqAddMapping;
+import com.cmp.portal.user.model.req.ReqModMapping;
 import com.cmp.portal.user.model.req.ReqUser;
 import com.cmp.portal.user.model.res.ResUser;
 import com.cmp.portal.user.model.res.ResUsers;
@@ -59,5 +61,31 @@ public interface UserService {
      */
     ResponseEntity deleteUser(User user, String userId);
 
+    /**
+     * 添加用户映射关系
+     *
+     * @param user    用户
+     * @param mapping 请求体
+     * @return 操作结果
+     */
+    ResponseEntity addUserMapping(User user, ReqAddMapping mapping);
 
+    /**
+     * 修改用户映射关系
+     *
+     * @param user      用户
+     * @param mapping   请求体
+     * @param mappingId 映射id
+     * @return 操作结果
+     */
+    ResponseEntity updateUserMapping(User user, ReqModMapping mapping, String mappingId);
+
+    /**
+     * 删除用户映射关系
+     *
+     * @param user      用户
+     * @param mappingId 映射id
+     * @return 操作结果
+     */
+    ResponseEntity deleteUserMappingById(User user, String mappingId);
 }
