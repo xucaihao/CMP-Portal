@@ -304,6 +304,11 @@ public class CloudController {
         return new ModelAndView("pages/clouddeploy/cloud-deploy.html");
     }
 
+    @RequestMapping("cloudDeploy/cloudTypeListHtml")
+    public ModelAndView cloudTypeListHtml() {
+        return new ModelAndView("pages/clouddeploy/cloud-type.html");
+    }
+
     @RequestMapping("cloudDeploy/findCloudDeployList")
     @ResponseBody
     public ResData findCloudDeployList() {
