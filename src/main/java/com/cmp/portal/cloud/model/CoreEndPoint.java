@@ -22,10 +22,6 @@ public class CoreEndPoint {
 
     private String endpoint;
 
-    public static Logger getLogger() {
-        return logger;
-    }
-
     public String getEndpoint() {
         return endpoint;
     }
@@ -43,6 +39,7 @@ public class CoreEndPoint {
             fw = new FileWriter(new File(path));
             buff = new BufferedWriter(fw);
             buff.write("core.endpoint=" + endpoint);
+            this.setEndpoint(endpoint);
             buff.flush();
         } catch (Exception e) {
             logger.error("write file error: {}", e);
