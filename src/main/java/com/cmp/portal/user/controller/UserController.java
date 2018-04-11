@@ -1,7 +1,7 @@
 package com.cmp.portal.user.controller;
 
-import com.cmp.portal.common.MySessionListener;
 import com.cmp.portal.common.ResponseData;
+import com.cmp.portal.common.SessionCounter;
 import com.cmp.portal.common.WebUtil;
 import com.cmp.portal.user.model.User;
 import com.cmp.portal.user.model.req.ReqAddMapping;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
@@ -49,10 +50,13 @@ public class UserController {
      * @return 在线用户列表
      */
     @RequestMapping("/onlineUser")
+    @ResponseBody
+    @SuppressWarnings("unchecked")
     public ResponseData<ResUsers> describeOnlineUser() {
-        MySessionListener listener = new MySessionListener();
-        List<User> onlineUsers = listener.getOnlineUsers();
-        return ResponseData.success(new ResUsers(onlineUsers));
+        HttpSession session = WebUtil.session();
+        ServletContext application = session.getServletContext();
+        List<User> onlineUserList = (List<User>) application.getAttribute("onlineUserList");
+        return ResponseData.success(new ResUsers(onlineUserList));
     }
 
     /**
@@ -69,10 +73,18 @@ public class UserController {
             user.setUserName(account);
             user.setPassword(password);
             ResUser loginUser = userService.describeLoginUser(user).getBody();
-            MySessionListener listener = new MySessionListener();
-            listener.setUser(loginUser.getUser());
+            //将登录用户信息存入session
             HttpSession session = WebUtil.session();
             session.setAttribute("user", loginUser.getUser());
+            //若用户首次登录，将登录用户添加进在线用户列表
+            boolean flag = 0 == SessionCounter.onlineUsers.size()
+                    || SessionCounter.onlineUsers.stream().noneMatch(vo ->
+                    vo.getUserId().equals(loginUser.getUser().getUserId()));
+            if (flag) {
+                SessionCounter.onlineUsers.add(loginUser.getUser());
+                ServletContext application = session.getServletContext();
+                application.setAttribute("onlineUserList", SessionCounter.onlineUsers);
+            }
             return new ModelAndView("index.html");
         } catch (Exception e) {
             return new ModelAndView("error.html");
