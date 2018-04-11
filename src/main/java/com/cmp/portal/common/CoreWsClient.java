@@ -23,7 +23,7 @@ public class CoreWsClient extends BaseClient {
      */
     public static <T> ResponseEntity<T> get(User user, String url, String cloudId, Class<T> clz) {
         Map<String, String> headerMap = new HashMap<>(16);
-        if (StringUtils.isEmpty(cloudId)) {
+        if (!StringUtils.isEmpty(cloudId)) {
             headerMap.put(HEADER_CLOUD_ID, cloudId);
         }
         headerMap.put(X_AUTH_TOKEN, user.getToken());

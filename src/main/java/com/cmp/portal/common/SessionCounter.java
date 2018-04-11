@@ -33,5 +33,6 @@ public class SessionCounter implements HttpSessionListener {
         // 从在线列表中删除用户名
         List<User> onlineUserList = (List<User>) application.getAttribute("onlineUserList");
         onlineUserList.remove(user);
+        application.setAttribute("onlineUserList", onlineUserList);
     }
 }
