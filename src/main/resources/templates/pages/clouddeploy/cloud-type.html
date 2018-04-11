@@ -47,27 +47,23 @@
 <body class="gray-bg">
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="ibox-title">
-        <h4>云管理</h4>
+        <h4>云服务商类型</h4>
     </div>
     <div class="ibox-content">
         <div class="row row-lg">
             <div class="col-sm-12">
                 <div class="example-wrap">
                     <div class="example">
-                        <table id="cloudDeployTable" data-mobile-responsive="true"
+                        <table id="cloudTypeTable" data-mobile-responsive="true"
                                class="table table-striped"
                                data-search="true"
                                data-show-refresh="true"
                                data-show-toggle="true"
                                data-show-columns="true">
                         </table>
-                        <div id="cloudDeployToolbar">
-                            <button id="btn_apply" type="button" class="btn btn-primary" data-toggle="modal"
-                                    data-target="#addCloudDeployModal">
-                                <span class="fa fa-plus" aria-hidden="true"></span>纳管
-                            </button>
-                            <button id="btn_deleteCloudDeploy" type="button" class="btn btn-primary">
-                                <span class="fa fa-recycle" aria-hidden="true"></span>删除
+                        <div id="cloudTypeToolbar" class="btn-group">
+                            <button id="btn_disableCloudType" type="button" class="btn btn-default">
+                                <span class="fa fa-recycle" aria-hidden="true"></span>禁用
                             </button>
                         </div>
                     </div>
@@ -76,63 +72,6 @@
         </div>
     </div>
 
-</div>
-
-
-<!-- 纳管新云模态框 -->
-<div class="modal fade" id="addCloudDeployModal" tabindex="-1" role="dialog" aria-labelledby="addCloudDeploy"
-     aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title fa fa-plus" style="font-size: 20px">
-                    纳管新云
-                </h4>
-            </div>
-            <form class="form-horizontal" role="form" style="width: 90%; margin-left: 5%">
-
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">云类型:</label>
-                        <div class="col-sm-10">
-                            <select class="form-control " id="type">
-                                <option value="ali">阿里云</option>
-                                <option value="tencent">腾讯云</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">云名称:</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control " id="name" placeholder="请输入名称">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Access Key:</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="ak" placeholder="请输入Access Key">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Security Key:</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="sk" placeholder="请输入Security Key">
-                        </div>
-                    </div>
-                </div>
-            </form>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">关闭
-                </button>
-                <button type="button" id="btn_addCloudDeploy" class="btn btn-primary">
-                    确定
-                </button>
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal -->
 </div>
 
 <div class="portal-loading">
@@ -147,7 +86,7 @@
     <div class="object"></div>
     <div class="object"></div>
 </div>
-<script src="../../js/clouddeploy/cloud-deploy.js"></script>
+<script src="../../js/clouddeploy/cloud-type.js"></script>
 
 </body>
 

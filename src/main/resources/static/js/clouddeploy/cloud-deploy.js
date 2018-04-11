@@ -67,16 +67,31 @@ $(function () {
             formatter: stateFormatter
         },
         {
-            field: 'name',
-            title: '云运营商'
+            field: 'cloudName',
+            title: '云服务商名称'
         },
         {
-            field: 'type',
-            title: '云类型'
+            field: 'cloudType',
+            title: '类型'
         },
-
         {
-            field: 'state',
+            field: 'visibility',
+            title: '云种类'
+        },
+        {
+            field: 'cloudProtocol',
+            title: '协议'
+        },
+        {
+            field: 'cloudIp',
+            title: 'IP'
+        },
+        {
+            field: 'cloudPort',
+            title: '端口'
+        },
+        {
+            field: 'status',
             title: '状态'
         },
         {
@@ -106,15 +121,17 @@ $(function () {
             type: "get",
             data: {},
             dataType: 'json',
-            url: "../cloudDeploy/findCloudDeployList",
+            url: "../clouds",
             success: function (data) {
-                debugger
-                $("#cloudDeployTable").bootstrapTable('load', data.data);
+                if ('Success' == data.code) {
+                    $("#cloudDeployTable").bootstrapTable('load', data.data.clouds);
+                }
+
                 $('.portal-loading').hide();
             },
             error: function () {
                 $('.portal-loading').hide();
-                Ewin.showMsg('error', '申请失败！');
+                Ewin.showMsg('error', '查找云服务商列表失败！');
                 $(".modal-backdrop").remove();
             }
         });
