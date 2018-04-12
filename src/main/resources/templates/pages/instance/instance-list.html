@@ -47,27 +47,30 @@
 <body class="gray-bg">
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="ibox-title">
-        <h4>云服务商</h4>
+        <h4>云主机</h4>
     </div>
     <div class="ibox-content">
         <div class="row row-lg">
             <div class="col-sm-12">
                 <div class="example-wrap">
                     <div class="example">
-                        <table id="cloudDeployTable" data-mobile-responsive="true"
+                        <table id="instancesTable" data-mobile-responsive="true"
                                class="table table-striped"
                                data-search="true"
                                data-show-refresh="true"
                                data-show-toggle="true"
                                data-show-columns="true">
                         </table>
-                        <div id="cloudDeployToolbar">
-                            <button id="btn_apply" type="button" class="btn btn-primary" data-toggle="modal"
-                                    data-target="#addCloudDeployModal">
-                                <span class="fa fa-plus" aria-hidden="true"></span>纳管
+                        <div id="instancesToolbar">
+                            <button id="btn_addInstance" type="button" class="btn btn-primary" data-toggle="modal"
+                                    data-target="#addInstanceModal">
+                                <span class="fa fa-plus" aria-hidden="true"></span>新建
+                            </button>
+                            <button id="btn_openInstance" type="button" class="btn btn-primary">
+                                <span class="fa fa-recycle" aria-hidden="true"></span>开机
                             </button>
                             <button id="btn_deleteCloudDeploy" type="button" class="btn btn-primary">
-                                <span class="fa fa-recycle" aria-hidden="true"></span>删除
+                                <span class="fa fa-recycle" aria-hidden="true"></span>关机
                             </button>
                         </div>
                     </div>
@@ -80,7 +83,7 @@
 
 
 <!-- 纳管新云模态框 -->
-<div class="modal fade" id="addCloudDeployModal" tabindex="-1" role="dialog" aria-labelledby="addCloudDeploy"
+<div class="modal fade" id="addInstanceModal" tabindex="-1" role="dialog" aria-labelledby="addCloudDeploy"
      aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -147,7 +150,7 @@
     <div class="object"></div>
     <div class="object"></div>
 </div>
-<script src="../../js/clouddeploy/cloud-deploy.js"></script>
+<script src="../js/instance/instance.js"></script>
 
 </body>
 
