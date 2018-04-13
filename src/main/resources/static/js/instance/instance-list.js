@@ -32,15 +32,17 @@ $(function () {
             field: 'memory',
             title: '配置',
             formatter: memoryFormatter
-        }
-        // {
-        //     field: 'cloudPort',
-        //     title: 'IP地址'
-        // },
-        // {
-        //     field: 'status',
-        //     title: '主机计费模式'
-        // },
+        },
+        {
+            field: 'publicIpAddresses',
+            title: 'IP地址',
+            formatter: ipFormatter
+        },
+        {
+            field: 'instanceChargeType',
+            title: '主机计费模式',
+            formatter: instanceChargeTypeFormatter
+        },
         // {
         //     field: 'status',
         //     title: '网络计费模式'
@@ -70,82 +72,85 @@ $(function () {
     findInstances();
 
     function findInstances() {
-        debugger
-        var instances = [{
-            instanceId: "111",
-            cloudId: "cloudId",
-            instanceName: "2222",
-            status: "RUNNING",
-            instanceType: "instanceType",
-            osName: "osName"
-        },
-            {
-                instanceId: "111",
-                cloudId: "cloudId",
-                instanceName: "2222",
-                status: "rebooting",
-                instanceType: "instanceType",
-                osName: "osName"
-            },
-            {
-                instanceId: "111",
-                cloudId: "cloudId",
-                instanceName: "2222",
-                status: "Starting",
-                instanceType: "instanceType",
-                osName: "osName"
-            },
-            {
-                instanceId: "111",
-                cloudId: "cloudId",
-                instanceName: "2222",
-                status: "pending",
-                instanceType: "instanceType",
-                osName: "osName"
-            },
-            {
-                instanceId: "111",
-                cloudId: "cloudId",
-                instanceName: "2222",
-                status: "stopping",
-                instanceType: "instanceType",
-                osName: "osName"
-            }
-        ];
-        $("#instancesTable").bootstrapTable('load', instances);
-        // $('.portal-loading').show();
-        // $.ajax({
-        //     type: "get",
-        //     data: {},
-        //     dataType: 'json',
-        //     url: "../instances",
-        //     success: function (data) {
-        //         debugger
-        //         if ('Success' == data.code) {
-        //             $("#instancesTable").bootstrapTable('load', data.data.instances);
-        //         }
-        //
-        //         $('.portal-loading').hide();
+        // var instances = [{
+        //     instanceId: "111",
+        //     cloudId: "cloudId",
+        //     instanceName: "2222",
+        //     status: "RUNNING",
+        //     instanceType: "instanceType",
+        //     osName: "osName",
+        //     memory: 2048,
+        //     cpu: 1
+        // },
+        //     {
+        //         instanceId: "111",
+        //         cloudId: "cloudId",
+        //         instanceName: "2222",
+        //         status: "rebooting",
+        //         instanceType: "instanceType",
+        //         osName: "osName",
+        //         memory: 2048,
+        //         cpu: 1
         //     },
-        //     error: function () {
-        //         $('.portal-loading').hide();
-        //         Ewin.showMsg('error', '查找云主机列表失败！');
-        //         $(".modal-backdrop").remove();
+        //     {
+        //         instanceId: "111",
+        //         cloudId: "cloudId",
+        //         instanceName: "2222",
+        //         status: "Starting",
+        //         instanceType: "instanceType",
+        //         osName: "osName",
+        //         memory: 2048,
+        //         cpu: 1
+        //     },
+        //     {
+        //         instanceId: "111",
+        //         cloudId: "cloudId",
+        //         instanceName: "2222",
+        //         status: "pending",
+        //         instanceType: "instanceType",
+        //         osName: "osName",
+        //         memory: 2048,
+        //         cpu: 1
+        //     },
+        //     {
+        //         instanceId: "111",
+        //         cloudId: "cloudId",
+        //         instanceName: "2222",
+        //         status: "stopping",
+        //         instanceType: "instanceType",
+        //         osName: "osName",
+        //         memory: 2048,
+        //         cpu: 1
         //     }
-        // });
-        for (var i = 0; i < instances.length; i++) {
-            var status = "#status" + i;
-            $(status).css({
-                "position": "relative",
-                "left": ($(status).parent().width() - $(status).width()) / 2 + "px"
-            });
-        }
+        // ];
+        // $("#instancesTable").bootstrapTable('load', instances);
+        $('.portal-loading').show();
+        $.ajax({
+            type: "get",
+            data: {},
+            dataType: 'json',
+            url: "../instances",
+            success: function (data) {
+                debugger
+                if ('Success' == data.code) {
+                    $("#instancesTable").bootstrapTable('load', data.data.instances);
+                    for (var i = 0; i < data.data.instances.length; i++) {
+                        var status = "#status" + i;
+                        $(status).css({
+                            "position": "relative",
+                            "left": ($(status).parent().width() - $(status).width()) / 2 + "px"
+                        });
+                    }
+                }
 
-        // $("#aaa0").css({
-        //     "position": "relative",
-        //     "left": "200px"
-        // });
-        // console.log($("#aaa0").parent().width());
+                $('.portal-loading').hide();
+            },
+            error: function () {
+                $('.portal-loading').hide();
+                Ewin.showMsg('error', '查找云主机列表失败！');
+                $(".modal-backdrop").remove();
+            }
+        });
     }
 
     function findInstanceAttribute() {
@@ -156,11 +161,11 @@ $(function () {
 
     // 表格中"状态"菜单栏数据格式化
     function stateFormatter(value, row, index) {
-        // if (row.state == true)
-        //     return {
-        //         disabled: true,//设置是否可用
-        //         checked: true//设置选中
-        //     };
+        if (row.state == true)
+            return {
+                disabled: true,//设置是否可用
+                checked: true//设置选中
+            };
         return value;
     }
 
@@ -190,23 +195,54 @@ $(function () {
     // 表格中"instanceType"菜单栏数据格式化
     function instanceTypeFormatter(value, row, index) {
         var instanceType = row.instanceType;
-        var osName = row.osName;
-        if (null != osName)
-            return '<p">' + row.instanceType + '<img src=../image/windows.jpg style="width: 20px;vertical-align: middle;"> </p>';
+        var osName = row.osname.toLowerCase();
+        if (osName.startsWith("windows"))
+            return '<p>' + row.instanceType + '  <img src=../image/windows.jpg style="width: 20px;vertical-align: middle;"> </p>';
+        else if (osName.startsWith("centos"))
+            return '<p>' + row.instanceType + '  <img src=../image/centos.jpg style="width: 20px;vertical-align: middle;"> </p>';
+        else if (osName.startsWith("ubuntu"))
+            return '<p>' + row.instanceType + '  <img src=../image/ubuntu.jpg style="width: 20px;vertical-align: middle;"> </p>';
+        else if (osName.startsWith("linux"))
+            return '<p>' + row.instanceType + '  <img src=../image/linux.jpg style="width: 20px;vertical-align: middle;"> </p>';
         else
-            return '<p">' + row.instanceType + '</p>';
+            return '<p>' + row.instanceType + '</p>';
     }
 
     // 表格中"memory"菜单栏数据格式化
     function memoryFormatter(value, row, index) {
         var memory = row.memory;
         var cpu = row.cpu;
-        return '<p id="memory' + index + '" > 运行中</p>'+ memory + ;
-        var osName = row.osName;
-        if (null != osName)
-            return '<p">' + row.instanceType + '<img src=../image/windows.jpg style="width: 20px;vertical-align: middle;"> </p>';
-        else
-            return '<p">' + row.instanceType + '</p>';
+        return '<p id="memory' + index + '" >' + cpu + '核' + memory + 'MB </p> ';
+    }
+
+    // 表格中"ipFormatter"菜单栏数据格式化
+    function ipFormatter(value, row, index) {
+        var publicIpAddresses = row.publicIpAddresses;
+        var innerIpAddress = row.innerIpAddress;
+        var pIp = "---(公)";
+        var iIp = "---(私)";
+        if (publicIpAddresses != null) {
+            pIp = '<p id="ip' + index + '" >' + publicIpAddresses + '(公)</p> ';
+        }
+        if (innerIpAddress != null) {
+            iIp = '<p id="ip' + index + '" >' + innerIpAddress + '(私) </p> ';
+        }
+        return pIp + iIp;
+    }
+
+    // 表格中"instanceChargeTypeFormatter"菜单栏数据格式化
+    function instanceChargeTypeFormatter(value, row, index) {
+        var instanceChargeType = row.instanceChargeType;
+        var expiredTime = row.expiredTime;
+        var chargeType = "---";
+        if (instanceChargeType === "prePaid") {
+            chargeType = '<p id="instanceChargeType' + index + '" >包年包月</p> ';
+        }
+        if (instanceChargeType === "postPaid_by_hour" || instanceChargeType === "postPaid") {
+            chargeType = '<p id="instanceChargeType' + index + '" >按量付费</p> ';
+        }
+        return chargeType
+            + '<p id="instanceChargeType' + index + '" >' + expiredTime + '到期 </p> ';
     }
 
     function operateFormatter(value, row, index) {
