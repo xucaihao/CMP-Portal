@@ -1,64 +1,7 @@
 $(function () {
     $('.dropdown-toggle').dropdown();
     $('.portal-loading').hide();
-    //模拟数据填充bootstrap-table表
-    var data = {
-        "data": [
-            {
-                "name": "阿里云-1",
-                "type": "ali",
-                "state": "可用"
-            }
-        ]
-    };
 
-
-    findInstances();
-
-
-    // $("#cloudDeployTable").bootstrapTable({
-    //     showRefresh: true,                  //是否显示刷新按钮
-    //     showPaginationSwitch: true,       //是否显示选择分页数按钮
-    //     columns: columns,
-    //     data: data.data,
-    //     pagination: true,//是否开启分页（*）
-    //     pageNumber: 1,//初始化加载第一页，默认第一页
-    //     pageSize: 5,//每页的记录行数（*）
-    //     pageList: [5, 10, 15],//可供选择的每页的行数（*）
-    //     sidePagination: "client", //分页方式：client客户端分页，server服务端分页（*）
-    //     search: true,
-    //     toolbar: "#floatingIpToolbar"
-    // });
-
-
-    $('#btn_addCloudDeploy').click(function () {
-        debugger
-        $("#addCloudDeployModal").modal('hide');
-        $('.portal-loading').show();
-        $.ajax({
-            type: "post",
-            async: true,
-            data: {
-                "type": $('#type option:selected').val(),
-                "name": $("#name").val(),
-                "ak": $("#ak").val(),
-                "sk": $("#sk").val()
-            },
-            url: "../cloudDeploy/addCloudDeploy",
-            success: function (data, status) {
-                debugger
-                if (status == "success") {
-                    Ewin.showMsg('success', '纳管成功！');
-                    $("#cloudDeployTable").bootstrapTable('refresh', {url: "../cloudDeploy/findCloudDeployList"});
-                }
-                $('.portal-loading').hide();
-            },
-            error: function () {
-                Ewin.showMsg('error', '纳管失败！');
-                $('.portal-loading').hide();
-            }
-        });
-    })
 
     var columns = [
         {
@@ -70,23 +13,26 @@ $(function () {
             field: 'instanceId',
             title: 'ID/云主机名',
             formatter: idNameFormatter
-            }
-        // {
-        //     field: 'status',
-        //     title: '状态'
-        // },
-        // {
-        //     field: 'zone',
-        //     title: '可用区'
-        // },
-        // {
-        //     field: 'instanceType',
-        //     title: '主机类型'
-        // },
-        // {
-        //     field: 'cloudIp',
-        //     title: '配置'
-        // },
+        },
+        {
+            field: 'status',
+            title: '状态',
+            formatter: statusFormatter
+        },
+        {
+            field: 'zoneId',
+            title: '可用区'
+        },
+        {
+            field: 'instanceType',
+            title: '主机类型',
+            formatter: instanceTypeFormatter
+        },
+        {
+            field: 'memory',
+            title: '配置',
+            formatter: memoryFormatter
+        }
         // {
         //     field: 'cloudPort',
         //     title: 'IP地址'
@@ -120,27 +66,86 @@ $(function () {
         toolbar: "#instancesToolbar"
     });
 
-    function findInstances() {
-        $('.portal-loading').show();
-        $.ajax({
-            type: "get",
-            data: {},
-            dataType: 'json',
-            url: "../instances",
-            success: function (data) {
-                debugger
-                if ('Success' == data.code) {
-                    $("#instancesTable").bootstrapTable('load', data.data.instances);
-                }
+    // 查询主机列表
+    findInstances();
 
-                $('.portal-loading').hide();
+    function findInstances() {
+        debugger
+        var instances = [{
+            instanceId: "111",
+            cloudId: "cloudId",
+            instanceName: "2222",
+            status: "RUNNING",
+            instanceType: "instanceType",
+            osName: "osName"
+        },
+            {
+                instanceId: "111",
+                cloudId: "cloudId",
+                instanceName: "2222",
+                status: "rebooting",
+                instanceType: "instanceType",
+                osName: "osName"
             },
-            error: function () {
-                $('.portal-loading').hide();
-                Ewin.showMsg('error', '查找云主机列表失败！');
-                $(".modal-backdrop").remove();
+            {
+                instanceId: "111",
+                cloudId: "cloudId",
+                instanceName: "2222",
+                status: "Starting",
+                instanceType: "instanceType",
+                osName: "osName"
+            },
+            {
+                instanceId: "111",
+                cloudId: "cloudId",
+                instanceName: "2222",
+                status: "pending",
+                instanceType: "instanceType",
+                osName: "osName"
+            },
+            {
+                instanceId: "111",
+                cloudId: "cloudId",
+                instanceName: "2222",
+                status: "stopping",
+                instanceType: "instanceType",
+                osName: "osName"
             }
-        });
+        ];
+        $("#instancesTable").bootstrapTable('load', instances);
+        // $('.portal-loading').show();
+        // $.ajax({
+        //     type: "get",
+        //     data: {},
+        //     dataType: 'json',
+        //     url: "../instances",
+        //     success: function (data) {
+        //         debugger
+        //         if ('Success' == data.code) {
+        //             $("#instancesTable").bootstrapTable('load', data.data.instances);
+        //         }
+        //
+        //         $('.portal-loading').hide();
+        //     },
+        //     error: function () {
+        //         $('.portal-loading').hide();
+        //         Ewin.showMsg('error', '查找云主机列表失败！');
+        //         $(".modal-backdrop").remove();
+        //     }
+        // });
+        for (var i = 0; i < instances.length; i++) {
+            var status = "#status" + i;
+            $(status).css({
+                "position": "relative",
+                "left": ($(status).parent().width() - $(status).width()) / 2 + "px"
+            });
+        }
+
+        // $("#aaa0").css({
+        //     "position": "relative",
+        //     "left": "200px"
+        // });
+        // console.log($("#aaa0").parent().width());
     }
 
     function findInstanceAttribute() {
@@ -149,13 +154,60 @@ $(function () {
         // alert(row);
     }
 
-    function idNameFormatter(value, row, index) {
-        sessionStorage.instanceId=row.instanceId;
-        sessionStorage.cloudId=row.cloudId;
-        return '<a href="../instanceDetailPage">'+row.instanceId +' </a>' + '<p>'+row.instanceName+'</p>';
-        // return row.instanceId + " \n" + row.instanceName;
+    // 表格中"状态"菜单栏数据格式化
+    function stateFormatter(value, row, index) {
+        // if (row.state == true)
+        //     return {
+        //         disabled: true,//设置是否可用
+        //         checked: true//设置选中
+        //     };
+        return value;
     }
 
+    // 表格中"ID/云主机名"菜单栏数据格式化
+    function idNameFormatter(value, row, index) {
+        sessionStorage.instanceId = row.instanceId;
+        sessionStorage.cloudId = row.cloudId;
+        return '<a id="instanceId' + index + '" href="../instanceDetailPage" style="margin: 0 auto">' + row.instanceId + ' </a>'
+            + '<p>' + row.instanceName + '</p>';
+    }
+
+    // 表格中"status"菜单栏数据格式化
+    function statusFormatter(value, row, index) {
+        var status = row.status.toLocaleLowerCase();
+        if (status == "running")
+            return '<p id="status' + index + '" class="fa fa-circle" style="color: #0C9C14;"> 运行中</p>';
+        if (status == "stopped")
+            return '<p id="status' + index + '" class="fa fa-circle" style="color: #8B91A0;"> 已停止</p> ';
+        if (status == "starting" || status == "rebooting")
+            return '<p id="status' + index + '" class="fa fa-spinner" style="color: #0C9C14;"> 启动中</p> ';
+        if (status == "pending")
+            return '<p id="status' + index + '" class="fa fa-spinner" style="color: #ff6600;"> 准备中</p> ';
+        if (status == "stopping")
+            return '<p id="status' + index + '" class="fa fa-spinner" style="color: #8B91A0;"> 停止中</p> ';
+    }
+
+    // 表格中"instanceType"菜单栏数据格式化
+    function instanceTypeFormatter(value, row, index) {
+        var instanceType = row.instanceType;
+        var osName = row.osName;
+        if (null != osName)
+            return '<p">' + row.instanceType + '<img src=../image/windows.jpg style="width: 20px;vertical-align: middle;"> </p>';
+        else
+            return '<p">' + row.instanceType + '</p>';
+    }
+
+    // 表格中"memory"菜单栏数据格式化
+    function memoryFormatter(value, row, index) {
+        var memory = row.memory;
+        var cpu = row.cpu;
+        return '<p id="memory' + index + '" > 运行中</p>'+ memory + ;
+        var osName = row.osName;
+        if (null != osName)
+            return '<p">' + row.instanceType + '<img src=../image/windows.jpg style="width: 20px;vertical-align: middle;"> </p>';
+        else
+            return '<p">' + row.instanceType + '</p>';
+    }
 
     function operateFormatter(value, row, index) {
         return [
@@ -204,16 +256,6 @@ $(function () {
             }
         });
     });
-
-    function stateFormatter(value, row, index) {
-        // debugger
-        // if (row.status == true)
-        //     return {
-        //         disabled: true,//设置是否可用
-        //         checked: true//设置选中
-        //     };
-        return value;
-    }
 });
 window.operateEvents = {
     'click .RoleOfDelete': function (e, value, row, index) {

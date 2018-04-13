@@ -36,18 +36,15 @@ public class InstanceController {
 
     @RequestMapping("/instanceDetailPage")
     public ModelAndView instanceDetailPage() {
-        return new ModelAndView("pages/instance/instance.html");
+        return new ModelAndView("pages/instance/instance-detail.html");
     }
 
     @RequestMapping("/instances")
     @ResponseBody
     public ResponseData<ResInstances> describeInstances(@RequestParam(required = false) String cloudId) {
         try {
-            logger.info("start");
             User user = WebUtil.getCurrentUser();
             ResponseEntity<ResInstances> response = instanceService.describeInstances(user, cloudId);
-            long l1 = System.currentTimeMillis();
-            logger.info("end");
             return ResponseData.success(response.getBody());
         } catch (Exception e) {
             return ResponseData.failure(e.getMessage());

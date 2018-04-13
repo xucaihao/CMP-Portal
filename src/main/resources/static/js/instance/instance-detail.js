@@ -1,8 +1,8 @@
 $(function () {
-    debugger
+    $('.portal-loading').hide();
     var cloudId = sessionStorage.cloudId;
     var instanceId = sessionStorage.instanceId;
-    
+
     $.ajax({
         url: "../instances/" + instanceId,
         data: {
@@ -17,7 +17,7 @@ $(function () {
             }
         },
         error: function () {
-            
+
         }
     });
 });
