@@ -54,19 +54,19 @@
             <div class="col-sm-12">
                 <div class="example-wrap">
                     <div class="example">
-                        <table id="cloudDeployTable" data-mobile-responsive="true"
+                        <table id="userTable" data-mobile-responsive="true"
                                class="table table-striped"
                                data-search="true"
                                data-show-refresh="true"
                                data-show-toggle="true"
                                data-show-columns="true">
                         </table>
-                        <div id="cloudDeployToolbar">
+                        <div id="userToolbar">
                             <button id="btn_apply" type="button" class="btn btn-primary" data-toggle="modal"
-                                    data-target="#addCloudDeployModal">
+                                    data-target="#adduserModal">
                                 <span class="fa fa-plus" aria-hidden="true"></span>纳管
                             </button>
-                            <button id="btn_deleteCloudDeploy" type="button" class="btn btn-primary">
+                            <button id="btn_deleteuser" type="button" class="btn btn-primary">
                                 <span class="fa fa-recycle" aria-hidden="true"></span>删除
                             </button>
                         </div>
@@ -80,7 +80,7 @@
 
 
 <!-- 纳管新云模态框 -->
-<div class="modal fade" id="addCloudDeployModal" tabindex="-1" role="dialog" aria-labelledby="addCloudDeploy"
+<div class="modal fade" id="adduserModal" tabindex="-1" role="dialog" aria-labelledby="adduser"
      aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -89,32 +89,12 @@
                     纳管新云
                 </h4>
             </div>
-            <form class="form-horizontal" role="form">
+            <form class="form-horizontal" role="form" style="width: 90%; margin-left: 5%">
 
                 <div class="modal-body">
-
                     <div class="form-group">
-                        <label class="col-sm-3 control-label">云类型:</label>
-                        <label class="radio-inline">
-                            <input type="radio" value="PUBLIC" name="visibility" onclick="selectClouds('PUBLIC')">公有云
-                        </label>
-                        <label class="radio-inline">
-                            <input type="radio" value="PRIVATE" name="visibility" onclick="selectClouds('PRIVATE')">私有云
-                        </label>
-                    </div>
-
-                    <!--<div class="form-group">-->
-                    <!--<label class="col-sm-2 control-label">云类型:</label>-->
-                    <!--<div class="col-sm-10">-->
-                    <!--<select class="form-control " id="selectCloudVisibility">-->
-                    <!--<option value="PUBLIC">公有云</option>-->
-                    <!--<option value="PRIVATE">私有云</option>-->
-                    <!--</select>-->
-                    <!--</div>-->
-                    <!--</div>-->
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">云服务商类型:</label>
-                        <div class="col-sm-9">
+                        <label class="col-sm-2 control-label">云类型:</label>
+                        <div class="col-sm-10">
                             <select class="form-control " id="type">
                                 <option value="ali">阿里云</option>
                                 <option value="tencent">腾讯云</option>
@@ -123,37 +103,23 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="col-sm-3 control-label">云名称:</label>
-                        <div class="col-sm-9">
+                        <label class="col-sm-2 control-label">云名称:</label>
+                        <div class="col-sm-10">
                             <input type="text" class="form-control " id="name" placeholder="请输入名称">
                         </div>
                     </div>
 
-                    <!--<div class="form-group" id="akDiv">-->
-                        <!--<label class="col-sm-3 control-label">Access Key:</label>-->
-                        <!--<div class="col-sm-9">-->
-                            <!--<input type="text" class="form-control" id="ak" placeholder="请输入Access Key">-->
-                        <!--</div>-->
-                    <!--</div>-->
-
-                    <!--<div class="form-group" id="skDiv">-->
-                        <!--<label class="col-sm-3 control-label">Security Key:</label>-->
-                        <!--<div class="col-sm-9">-->
-                            <!--<input type="text" class="form-control" id="sk" placeholder="请输入Security Key">-->
-                        <!--</div>-->
-                    <!--</div>-->
-
-                    <div class="form-group" id="userNameDiv">
-                        <label class="col-sm-3 control-label">服务器地址:</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="userName" placeholder="请输入服务器地址">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Access Key:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="ak" placeholder="请输入Access Key">
                         </div>
                     </div>
 
-                    <div class="form-group" id="passwordDiv">
-                        <label class="col-sm-3 control-label">端口:</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="password" placeholder="请输入端口">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Security Key:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="sk" placeholder="请输入Security Key">
                         </div>
                     </div>
                 </div>
@@ -161,7 +127,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭
                 </button>
-                <button type="button" id="btn_addCloudDeploy" class="btn btn-primary">
+                <button type="button" id="btn_adduser" class="btn btn-primary">
                     确定
                 </button>
             </div>
@@ -181,7 +147,7 @@
     <div class="object"></div>
     <div class="object"></div>
 </div>
-<script src="../../js/clouddeploy/cloud-deploy.js"></script>
+<script src="../../js/user/user.js"></script>
 
 </body>
 

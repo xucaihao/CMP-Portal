@@ -1,59 +1,31 @@
 $(function () {
     $('.dropdown-toggle').dropdown();
     $('.portal-loading').hide();
-    $ ('#userNameDiv').hide();
-    $ ('#passwordDiv').hide();
-
-    //模拟数据填充bootstrap-table表
-    var data = {
-        "data": [
-            {
-                "name": "阿里云-1",
-                "type": "ali",
-                "state": "可用"
-            }
-        ]
-    };
-
-
-
-    // $("#cloudDeployTable").bootstrapTable({
-    //     showRefresh: true,                  //是否显示刷新按钮
-    //     showPaginationSwitch: true,       //是否显示选择分页数按钮
-    //     columns: columns,
-    //     data: data.data,
-    //     pagination: true,//是否开启分页（*）
-    //     pageNumber: 1,//初始化加载第一页，默认第一页
-    //     pageSize: 5,//每页的记录行数（*）
-    //     pageList: [5, 10, 15],//可供选择的每页的行数（*）
-    //     sidePagination: "client", //分页方式：client客户端分页，server服务端分页（*）
-    //     search: true,
-    //     toolbar: "#floatingIpToolbar"
-    // });
-
-
-    $('#btn_addCloudDeploy').click(function () {
+    
+    $('#btn_addUser').click(function () {
         debugger
-        $("#addCloudDeployModal").modal('hide');
+        $("#addUserModal").modal('hide');
         $('.portal-loading').show();
         $.ajax({
             type: "post",
             async: true,
             data: {
                 "type": $('#type option:selected').val(),
-                "name": $("#name").val()
+                "name": $("#name").val(),
+                "ak": $("#ak").val(),
+                "sk": $("#sk").val()
             },
-            url: "../cloudDeploy/addCloudDeploy",
+            url: "../user/addUser",
             success: function (data, status) {
                 debugger
                 if (status == "success") {
-                    Ewin.showMsg('success', '纳管成功！');
-                    $("#cloudDeployTable").bootstrapTable('refresh', {url: "../cloudDeploy/findCloudDeployList"});
+                    Ewin.showMsg('success', '添加成功！');
+                    $("#userTable").bootstrapTable('refresh', {url: "../user/findUserList"});
                 }
                 $('.portal-loading').hide();
             },
             error: function () {
-                Ewin.showMsg('error', '纳管失败！');
+                Ewin.showMsg('error', '添加失败！');
                 $('.portal-loading').hide();
             }
         });
@@ -67,7 +39,7 @@ $(function () {
         },
         {
             field: 'cloudName',
-            title: '云服务商名称'
+            title: '用户服务商名称'
         },
         {
             field: 'cloudType',
@@ -75,7 +47,7 @@ $(function () {
         },
         {
             field: 'visibility',
-            title: '云种类'
+            title: '用户种类'
         },
         {
             field: 'cloudProtocol',
@@ -101,7 +73,7 @@ $(function () {
             formatter: operateFormatter
         }
     ];
-    $("#cloudDeployTable").bootstrapTable({
+    $("#userTable").bootstrapTable({
         showRefresh: true,                  //是否显示刷新按钮
         showPaginationSwitch: true,       //是否显示选择分页数按钮
         columns: columns,
@@ -111,12 +83,12 @@ $(function () {
         pageList: [5, 10, 15],//可供选择的每页的行数（*）
         sidePagination: "client", //分页方式：client客户端分页，server服务端分页（*）
         search: true,
-        toolbar: "#cloudDeployToolbar"
+        toolbar: "#userToolbar"
     });
 
-    findCloudDeployList();
+    findUserList();
 
-    function findCloudDeployList() {
+    function findUserList() {
         $('.portal-loading').show();
         $.ajax({
             type: "get",
@@ -129,7 +101,7 @@ $(function () {
                     data.data.clouds.forEach(function (value, index, array) {
                         debugger
                         if (value.visibility === 'PUBLIC') {
-                            value.visibility = '公有云';
+                            value.visibility = '公有用户';
                         }
                         if (value.cloudProtocol === 'default') {
                             value.cloudProtocol = '-----'
@@ -151,14 +123,14 @@ $(function () {
                         }
 
                     });
-                    $("#cloudDeployTable").bootstrapTable('load', data.data.clouds);
+                    $("#userTable").bootstrapTable('load', data.data.clouds);
                 }
 
                 $('.portal-loading').hide();
             },
             error: function () {
                 $('.portal-loading').hide();
-                Ewin.showMsg('error', '查找云服务商列表失败！');
+                Ewin.showMsg('error', '查找用户服务商列表失败！');
                 $(".modal-backdrop").remove();
             }
         });
@@ -170,29 +142,12 @@ $(function () {
         ].join('');
     }
 
-    $("#selectCloudVisibility").change(function(){
-        //添加所需要执行的操作代码
-
-        var p = $('#selectCloudVisibility option:selected').val();
-        if (p === 'PUBLIC') {
-            $ ('#akDiv').show();
-            $ ('#skDiv').show();
-            $ ('#userNameDiv').hide();
-            $ ('#passwordDiv').hide();
-        } else {
-            $ ('#akDiv').hide();
-            $ ('#skDiv').hide();
-            $ ('#userNameDiv').show();
-            $ ('#passwordDiv').show();
-        }
-    })
-
     //批量删除
-    $('#btn_deleteCloudDeploy').click(function () {
+    $('#btn_deleteUser').click(function () {
         debugger
-        var rows = $("#cloudDeployTable").bootstrapTable("getSelections");
+        var rows = $("#userTable").bootstrapTable("getSelections");
         if (rows.length === 0) {
-            Ewin.showMsg('warning', '请选中要删除的云');
+            Ewin.showMsg('warning', '请选中要删除的用户');
             return;
         }
 
@@ -201,7 +156,7 @@ $(function () {
             ids.push(rows[i].id);
         }
 
-        Ewin.confirm({message: "确认要删除选中的云吗？数量：" + rows.length}).on(function (flag) {
+        Ewin.confirm({message: "确认要删除选中的用户吗？数量：" + rows.length}).on(function (flag) {
             if (flag === true) {
                 $('.portal-loading').show();
                 $.ajax({
@@ -214,15 +169,15 @@ $(function () {
                         debugger
                         if (status == "success") {
                             Ewin.showMsg('success', '删除成功！');
-                            $("#cloudDeployTable").bootstrapTable('refresh', {url: "../cloudDeploy/findCloudDeployList"});
+                            $("#userTable").bootstrapTable('refresh', {url: "../user/findUserList"});
                         } else {
-                            Ewin.showMsg('error', '删除云失败！');
+                            Ewin.showMsg('error', '删除用户失败！');
                         }
                         $('.portal-loading').hide();
                     },
                     error: function () {
                         $('.portal-loading').hide();
-                        Ewin.showMsg('error', '删除云失败！');
+                        Ewin.showMsg('error', '删除用户失败！');
                     }
                 });
             }
@@ -241,7 +196,7 @@ $(function () {
 window.operateEvents = {
     'click .RoleOfDelete': function (e, value, row, index) {
         debugger
-        Ewin.confirm({message: "确认要删除该云吗？"}).on(function (flag) {
+        Ewin.confirm({message: "确认要删除该用户吗？"}).on(function (flag) {
             if (flag === true) {
                 //操作提示
                 $('.portal-loading').show();
@@ -251,19 +206,19 @@ window.operateEvents = {
                     type: "get",
                     async: true,
                     data: {ids: ids},
-                    url: "../cloudDeploy/deleteCloudDeploy",
+                    url: "../user/deleteUser",
                     success: function (data, status) {
                         if (status == "success") {
                             Ewin.showMsg('success', '删除成功！');
-                            $("#cloudDeployTable").bootstrapTable('refresh', {url: "../cloudDeploy/findCloudDeployList"});
+                            $("#userTable").bootstrapTable('refresh', {url: "../user/findUserList"});
                         } else {
-                            Ewin.showMsg('error', '删除云失败！');
+                            Ewin.showMsg('error', '删除用户失败！');
                         }
                         $('.portal-loading').hide();
                     },
                     error: function () {
                         $('.portal-loading').hide();
-                        Ewin.showMsg('error', '删除云失败！');
+                        Ewin.showMsg('error', '删除用户失败！');
                     }
                 });
             }
@@ -305,37 +260,3 @@ window.operateEvents = {
         // $.growl.warning({title: "警告标题", message: "警告消息内容!" });
     }
 };
-
-function selectClouds(type) {
-    debugger
-    if (type === 'PUBLIC') {
-        $ ('#userNameDiv').hide();
-        $ ('#passwordDiv').hide();
-    } else {
-        $ ('#userNameDiv').show();
-        $ ('#passwordDiv').show();
-    }
-
-    $.ajax({
-        type: "get",
-        async: true,
-        data: {visibility: type},
-        url: "../cloudTypes",
-        success: function (data, status) {
-            if (status == "success") {
-                Ewin.showMsg('success', '删除成功！');
-                $("#cloudDeployTable").bootstrapTable('refresh', {url: "../cloudDeploy/findCloudDeployList"});
-            } else {
-                Ewin.showMsg('error', '删除云失败！');
-            }
-            $('.portal-loading').hide();
-        },
-        error: function () {
-            $('.portal-loading').hide();
-            Ewin.showMsg('error', '删除云失败！');
-        }
-    });
-
-
-
-}
