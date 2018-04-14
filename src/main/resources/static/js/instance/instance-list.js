@@ -265,53 +265,15 @@ $(function () {
 
     function operateFormatter(value, row, index) {
         return [
-            '<a id="instanceLogIn" class="RoleOfDelete fa fa-tv"></a>',
+            '<button id="instanceLogIn" type="button" class="btn btn-primary" data-toggle="modal" data-target="#instanceLogIn">'
+            + '<span class="fa fa-tv" aria-hidden="true"></span>登录 </button>',
             '<a class="RoleOfDelete fa fa-paypal"></a>',
             '<a class="RoleOfDelete fa fa-list"></a>'
         ].join('');
     }
 
-    //批量删除
-    $('#btn_deleteCloudDeploy').click(function () {
-        debugger
-        var rows = $("#cloudDeployTable").bootstrapTable("getSelections");
-        if (rows.length === 0) {
-            Ewin.showMsg('warning', '请选中要删除的云');
-            return;
-        }
 
-        var ids = [];
-        for (var i = 0; i < rows.length; i++) {
-            ids.push(rows[i].id);
-        }
 
-        Ewin.confirm({message: "确认要删除选中的云吗？数量：" + rows.length}).on(function (flag) {
-            if (flag === true) {
-                $('.portal-loading').show();
-                $.ajax({
-                    type: "get",
-                    async: true,
-                    traditional: false,
-                    data: {ids: ids},
-                    url: "fd oy",
-                    success: function (data, status) {
-                        debugger
-                        if (status == "success") {
-                            Ewin.showMsg('success', '删除成功！');
-                            $("#cloudDeployTable").bootstrapTable('refresh', {url: "../cloudDeploy/findCloudDeployList"});
-                        } else {
-                            Ewin.showMsg('error', '删除云失败！');
-                        }
-                        $('.portal-loading').hide();
-                    },
-                    error: function () {
-                        $('.portal-loading').hide();
-                        Ewin.showMsg('error', '删除云失败！');
-                    }
-                });
-            }
-        });
-    });
 });
 window.operateEvents = {
     'click .instanceLogIn': function (e, value, row, index) {

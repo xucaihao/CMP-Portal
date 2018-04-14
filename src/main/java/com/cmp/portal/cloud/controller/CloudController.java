@@ -5,10 +5,7 @@ import com.cmp.portal.cloud.model.req.ReqCreCloud;
 import com.cmp.portal.cloud.model.req.ReqModCloud;
 import com.cmp.portal.cloud.model.req.ReqModCloudAdapter;
 import com.cmp.portal.cloud.model.req.ReqModCloudType;
-import com.cmp.portal.cloud.model.res.ResCloud;
-import com.cmp.portal.cloud.model.res.ResCloudAdapters;
-import com.cmp.portal.cloud.model.res.ResCloudTypes;
-import com.cmp.portal.cloud.model.res.ResClouds;
+import com.cmp.portal.cloud.model.res.*;
 import com.cmp.portal.cloud.service.CloudService;
 import com.cmp.portal.common.ResponseData;
 import com.cmp.portal.common.WebUtil;
@@ -16,6 +13,7 @@ import com.cmp.portal.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,15 +40,23 @@ public class CloudController {
     /**
      * 获取所有可对接云平台类型
      *
+     * @param visibility 可见类型
      * @return 可对接云平台类型列表
      */
     @RequestMapping("/cloudTypes")
     @ResponseBody
-    public ResponseData<ResCloudTypes> describeCloudTypes() {
+    public ResponseData<ResCloudTypes> describeCloudTypes(@RequestParam(required = false) String visibility) {
         try {
             User user = WebUtil.getCurrentUser();
-            ResponseEntity<ResCloudTypes> response = cloudService.describeCloudTypes(user);
-            return ResponseData.success(response.getBody());
+            ResCloudTypes cloudTypes = cloudService.describeCloudTypes(user).getBody();
+            //根据可见类型筛选
+            if (!StringUtils.isEmpty(visibility)) {
+                List<CloudTypeEntity> resCloudTypes = cloudTypes.getCloudTypes().stream()
+                        .filter(cloudType -> visibility.equals(cloudType.getVisibility()))
+                        .collect(toList());
+                cloudTypes.setCloudTypes(resCloudTypes);
+            }
+            return ResponseData.success(cloudTypes);
         } catch (Exception e) {
             return ResponseData.failure(e.getMessage());
         }
@@ -77,15 +83,23 @@ public class CloudController {
     /**
      * 获取所有已对接云平台
      *
+     * @param visibility 可见类型
      * @return 已对接云平台列表
      */
     @RequestMapping("/clouds")
     @ResponseBody
-    public ResponseData<ResClouds> describeClouds() {
+    public ResponseData<ResClouds> describeClouds(@RequestParam(required = false) String visibility) {
         try {
             User user = WebUtil.getCurrentUser();
-            ResponseEntity<ResClouds> response = cloudService.describeClouds(user);
-            return ResponseData.success(response.getBody());
+            ResClouds clouds = cloudService.describeClouds(user).getBody();
+            //根据可见类型筛选
+            if (!StringUtils.isEmpty(visibility)) {
+                List<CloudEntity> resClouds = clouds.getClouds().stream()
+                        .filter(cloud -> visibility.equals(cloud.getVisibility()))
+                        .collect(toList());
+                clouds.setClouds(resClouds);
+            }
+            return ResponseData.success(clouds);
         } catch (Exception e) {
             return ResponseData.failure(e.getMessage());
         }
@@ -287,17 +301,17 @@ public class CloudController {
         return ResponseData.success(coreEndPoint);
     }
 
-    //测试数据 只考虑单线程操作
-    public static List<CloudEntity> datas = new ArrayList<>();
-
-    static {
-        CloudEntity cloud = new CloudEntity();
-        cloud.setId(1);
-        cloud.setName("阿里云-1");
-        cloud.setState("可用");
-        cloud.setType("ali");
-        datas.add(cloud);
-    }
+//    //测试数据 只考虑单线程操作
+//    public static List<CloudEntity> datas = new ArrayList<>();
+//
+//    static {
+//        CloudEntity cloud = new CloudEntity();
+//        cloud.setId(1);
+//        cloud.setName("阿里云-1");
+//        cloud.setState("可用");
+//        cloud.setType("ali");
+//        datas.add(cloud);
+//    }
 
     @RequestMapping("cloudDeploy/cloudDeployListHtml")
     public ModelAndView index() {
@@ -309,143 +323,143 @@ public class CloudController {
         return new ModelAndView("pages/clouddeploy/cloud-type.html");
     }
 
-    @RequestMapping("cloudDeploy/findCloudDeployList")
-    @ResponseBody
-    public ResData findCloudDeployList() {
-        ResData resData = new ResData();
-        resData.setCode(200);
-        resData.setData(datas);
-        return resData;
-    }
-
-    @RequestMapping("cloudDeploy/addCloudDeploy")
-    @ResponseBody
-    public ResData addCloudDeploy(CloudEntity cloud) {
-        int id = (int) System.currentTimeMillis();
-        cloud.setId(id);
-        cloud.setState("可用");
-        datas.add(cloud);
-        ResData resData = new ResData();
-        resData.setCode(201);
-        return resData;
-    }
-
-    @RequestMapping("cloudDeploy/deleteCloudDeploy")
-    @ResponseBody
-    public ResData deleteCloudDeploy(@RequestParam(name = "ids[]") List<Integer> ids) {
-        for (Integer id : ids) {
-            Iterator it = datas.iterator();
-            while (it.hasNext()) {
-                CloudEntity data = (CloudEntity) it.next();
-                if (data.getId() == id) {
-                    it.remove();
-                    break;
-                }
-            }
-        }
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        ResData resData = new ResData();
-        resData.setCode(204);
-        return resData;
-    }
-
-
-    @RequestMapping("cloudDeploy/modifyCloudDeploy")
-    @ResponseBody
-    public ResData modifyCloudDeploy(CloudEntity cloud) {
-        Iterator it = datas.iterator();
-        while (it.hasNext()) {
-            CloudEntity data = (CloudEntity) it.next();
-            if (data.getId() == cloud.getId()) {
-                data = cloud;
-                break;
-            }
-        }
-        ResData resData = new ResData();
-        resData.setCode(200);
-        return resData;
-    }
-}
-
-class ResData {
-    private int code;
-    private Object data;
-
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
-    }
-
-    public Object getData() {
-        return data;
-    }
-
-    public void setData(Object data) {
-        this.data = data;
-    }
-}
-
-class CloudEntity {
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getAk() {
-        return ak;
-    }
-
-    public void setAk(String ak) {
-        this.ak = ak;
-    }
-
-    public String getSk() {
-        return sk;
-    }
-
-    public void setSk(String sk) {
-        this.sk = sk;
-    }
-
-    private int id;
-    private String name;
-    private String state;
-    private String type;
-    private String ak;
-    private String sk;
+//    @RequestMapping("cloudDeploy/findCloudDeployList")
+//    @ResponseBody
+//    public ResData findCloudDeployList() {
+//        ResData resData = new ResData();
+//        resData.setCode(200);
+//        resData.setData(datas);
+//        return resData;
+//    }
+//
+//    @RequestMapping("cloudDeploy/addCloudDeploy")
+//    @ResponseBody
+//    public ResData addCloudDeploy(CloudEntity cloud) {
+//        int id = (int) System.currentTimeMillis();
+//        cloud.setId(id);
+//        cloud.setState("可用");
+//        datas.add(cloud);
+//        ResData resData = new ResData();
+//        resData.setCode(201);
+//        return resData;
+//    }
+//
+//    @RequestMapping("cloudDeploy/deleteCloudDeploy")
+//    @ResponseBody
+//    public ResData deleteCloudDeploy(@RequestParam(name = "ids[]") List<Integer> ids) {
+//        for (Integer id : ids) {
+//            Iterator it = datas.iterator();
+//            while (it.hasNext()) {
+//                CloudEntity data = (CloudEntity) it.next();
+//                if (data.getId() == id) {
+//                    it.remove();
+//                    break;
+//                }
+//            }
+//        }
+//        try {
+//            Thread.sleep(2000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        ResData resData = new ResData();
+//        resData.setCode(204);
+//        return resData;
+//    }
+//
+//
+//    @RequestMapping("cloudDeploy/modifyCloudDeploy")
+//    @ResponseBody
+//    public ResData modifyCloudDeploy(CloudEntity cloud) {
+//        Iterator it = datas.iterator();
+//        while (it.hasNext()) {
+//            CloudEntity data = (CloudEntity) it.next();
+//            if (data.getId() == cloud.getId()) {
+//                data = cloud;
+//                break;
+//            }
+//        }
+//        ResData resData = new ResData();
+//        resData.setCode(200);
+//        return resData;
+//    }
+//}
+//
+//class ResData {
+//    private int code;
+//    private Object data;
+//
+//    public int getCode() {
+//        return code;
+//    }
+//
+//    public void setCode(int code) {
+//        this.code = code;
+//    }
+//
+//    public Object getData() {
+//        return data;
+//    }
+//
+//    public void setData(Object data) {
+//        this.data = data;
+//    }
+//}
+//
+//class CloudEntity {
+//    public int getId() {
+//        return id;
+//    }
+//
+//    public void setId(int id) {
+//        this.id = id;
+//    }
+//
+//    public String getName() {
+//        return name;
+//    }
+//
+//    public void setName(String name) {
+//        this.name = name;
+//    }
+//
+//    public String getState() {
+//        return state;
+//    }
+//
+//    public void setState(String state) {
+//        this.state = state;
+//    }
+//
+//    public String getType() {
+//        return type;
+//    }
+//
+//    public void setType(String type) {
+//        this.type = type;
+//    }
+//
+//    public String getAk() {
+//        return ak;
+//    }
+//
+//    public void setAk(String ak) {
+//        this.ak = ak;
+//    }
+//
+//    public String getSk() {
+//        return sk;
+//    }
+//
+//    public void setSk(String sk) {
+//        this.sk = sk;
+//    }
+//
+//    private int id;
+//    private String name;
+//    private String state;
+//    private String type;
+//    private String ak;
+//    private String sk;
 
 }
