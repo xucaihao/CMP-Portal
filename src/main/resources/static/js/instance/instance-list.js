@@ -48,12 +48,12 @@ $(function () {
             title: '主机计费模式',
             formatter: instanceChargeTypeFormatter
         },
-        {
-            field: 'internetChargeType',
-            title: '网络计费模式',
-            align: 'center',
-            formatter: internetChargeTypeFormatter
-        },
+        // {
+        //     field: 'internetChargeType',
+        //     title: '网络计费模式',
+        //     align: 'center',
+        //     formatter: internetChargeTypeFormatter
+        // },
         {
             field: 'operate',
             title: '操作',
@@ -251,23 +251,23 @@ $(function () {
     }
 
     // 表格中"internetChargeType"菜单栏数据格式化
-    function internetChargeTypeFormatter(value, row, index) {
-        var internetChargeType = row.internetChargeType.toLowerCase();
-        var chargeType = "---";
-        if (internetChargeType.indexOf("bandwidth") >= 0) {
-            chargeType = '<p id="internetChargeType' + index + '" >按带宽付费</p> ';
-        }
-        if (internetChargeType.indexOf("traffic") >= 0) {
-            chargeType = '<p id="internetChargeType' + index + '" >按流量付费</p> ';
-        }
-        return chargeType;
-    }
+    // function internetChargeTypeFormatter(value, row, index) {
+    //     var internetChargeType = row.internetChargeType.toLowerCase();
+    //     var chargeType = "---";
+    //     if (internetChargeType.indexOf("bandwidth") >= 0) {
+    //         chargeType = '<p id="internetChargeType' + index + '" >按带宽付费</p> ';
+    //     }
+    //     if (internetChargeType.indexOf("traffic") >= 0) {
+    //         chargeType = '<p id="internetChargeType' + index + '" >按流量付费</p> ';
+    //     }
+    //     return chargeType;
+    // }
 
     function operateFormatter(value, row, index) {
         return [
-            '<a class="RoleOfDelete fa fa-tv"></a>',
+            '<a id="instanceLogIn" class="RoleOfDelete fa fa-tv"></a>',
             '<a class="RoleOfDelete fa fa-paypal"></a>',
-            '<a class="RoleOfDelete fa fa-list"></a>',
+            '<a class="RoleOfDelete fa fa-list"></a>'
         ].join('');
     }
 
@@ -314,7 +314,7 @@ $(function () {
     });
 });
 window.operateEvents = {
-    'click .RoleOfDelete': function (e, value, row, index) {
+    'click .instanceLogIn': function (e, value, row, index) {
         debugger
         Ewin.confirm({message: "确认要删除该云吗？"}).on(function (flag) {
             if (flag === true) {
