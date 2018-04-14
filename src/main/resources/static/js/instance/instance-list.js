@@ -10,6 +10,10 @@ $(function () {
             formatter: stateFormatter
         },
         {
+            field: 'cloudName',
+            title: '云服务商'
+        },
+        {
             field: 'instanceId',
             title: 'ID/云主机名',
             formatter: idNameFormatter
@@ -17,6 +21,7 @@ $(function () {
         {
             field: 'status',
             title: '状态',
+            align: 'center',
             formatter: statusFormatter
         },
         {
@@ -34,7 +39,7 @@ $(function () {
             formatter: memoryFormatter
         },
         {
-            field: 'publicIpAddresses',
+            field: 'publicIpAddress',
             title: 'IP地址',
             formatter: ipFormatter
         },
@@ -44,16 +49,18 @@ $(function () {
             formatter: instanceChargeTypeFormatter
         },
         // {
-        //     field: 'status',
-        //     title: '网络计费模式'
-        // },
-        // {
-        //     field: 'operate',
-        //     title: '操作',
+        //     field: 'internetChargeType',
+        //     title: '网络计费模式',
         //     align: 'center',
-        //     events: operateEvents,
-        //     formatter: operateFormatter
-        // }
+        //     formatter: internetChargeTypeFormatter
+        // },
+        {
+            field: 'operate',
+            title: '操作',
+            align: 'center',
+            events: operateEvents,
+            formatter: operateFormatter
+        }
     ];
     $("#instancesTable").bootstrapTable({
         showRefresh: true,                  //是否显示刷新按钮
@@ -131,7 +138,6 @@ $(function () {
             dataType: 'json',
             url: "../instances",
             success: function (data) {
-                debugger
                 if ('Success' == data.code) {
                     $("#instancesTable").bootstrapTable('load', data.data.instances);
                     for (var i = 0; i < data.data.instances.length; i++) {
@@ -142,7 +148,6 @@ $(function () {
                         });
                     }
                 }
-
                 $('.portal-loading').hide();
             },
             error: function () {
@@ -215,14 +220,14 @@ $(function () {
         return '<p id="memory' + index + '" >' + cpu + '核' + memory + 'MB </p> ';
     }
 
-    // 表格中"ipFormatter"菜单栏数据格式化
+    // 表格中"ip"菜单栏数据格式化
     function ipFormatter(value, row, index) {
-        var publicIpAddresses = row.publicIpAddresses;
+        var publicIpAddress = row.publicIpAddress;
         var innerIpAddress = row.innerIpAddress;
         var pIp = "---(公)";
         var iIp = "---(私)";
-        if (publicIpAddresses != null) {
-            pIp = '<p id="ip' + index + '" >' + publicIpAddresses + '(公)</p> ';
+        if (publicIpAddress != null) {
+            pIp = '<p id="ip' + index + '" >' + publicIpAddress + '(公)</p> ';
         }
         if (innerIpAddress != null) {
             iIp = '<p id="ip' + index + '" >' + innerIpAddress + '(私) </p> ';
@@ -230,71 +235,48 @@ $(function () {
         return pIp + iIp;
     }
 
-    // 表格中"instanceChargeTypeFormatter"菜单栏数据格式化
+    // 表格中"instanceChargeType"菜单栏数据格式化
     function instanceChargeTypeFormatter(value, row, index) {
-        var instanceChargeType = row.instanceChargeType;
+        var instanceChargeType = row.instanceChargeType.toLowerCase();
         var expiredTime = row.expiredTime;
         var chargeType = "---";
-        if (instanceChargeType === "prePaid") {
+        if (instanceChargeType == "prepaid") {
             chargeType = '<p id="instanceChargeType' + index + '" >包年包月</p> ';
         }
-        if (instanceChargeType === "postPaid_by_hour" || instanceChargeType === "postPaid") {
+        if (instanceChargeType == "postpaid_by_hour" || instanceChargeType === "postpaid") {
             chargeType = '<p id="instanceChargeType' + index + '" >按量付费</p> ';
         }
         return chargeType
             + '<p id="instanceChargeType' + index + '" >' + expiredTime + '到期 </p> ';
     }
 
+    // 表格中"internetChargeType"菜单栏数据格式化
+    // function internetChargeTypeFormatter(value, row, index) {
+    //     var internetChargeType = row.internetChargeType.toLowerCase();
+    //     var chargeType = "---";
+    //     if (internetChargeType.indexOf("bandwidth") >= 0) {
+    //         chargeType = '<p id="internetChargeType' + index + '" >按带宽付费</p> ';
+    //     }
+    //     if (internetChargeType.indexOf("traffic") >= 0) {
+    //         chargeType = '<p id="internetChargeType' + index + '" >按流量付费</p> ';
+    //     }
+    //     return chargeType;
+    // }
+
     function operateFormatter(value, row, index) {
         return [
-            '<a class="RoleOfDelete fa fa-trash-o"></a>'
+            '<button id="instanceLogIn" type="button" class="btn btn-primary" data-toggle="modal" data-target="#instanceLogIn">'
+            + '<span class="fa fa-tv" aria-hidden="true"></span>登录 </button>',
+            '<a class="RoleOfDelete fa fa-paypal"></a>',
+            '<a class="RoleOfDelete fa fa-list"></a>'
         ].join('');
     }
 
-    //批量删除
-    $('#btn_deleteCloudDeploy').click(function () {
-        debugger
-        var rows = $("#cloudDeployTable").bootstrapTable("getSelections");
-        if (rows.length === 0) {
-            Ewin.showMsg('warning', '请选中要删除的云');
-            return;
-        }
 
-        var ids = [];
-        for (var i = 0; i < rows.length; i++) {
-            ids.push(rows[i].id);
-        }
 
-        Ewin.confirm({message: "确认要删除选中的云吗？数量：" + rows.length}).on(function (flag) {
-            if (flag === true) {
-                $('.portal-loading').show();
-                $.ajax({
-                    type: "get",
-                    async: true,
-                    traditional: false,
-                    data: {ids: ids},
-                    url: "fd oy",
-                    success: function (data, status) {
-                        debugger
-                        if (status == "success") {
-                            Ewin.showMsg('success', '删除成功！');
-                            $("#cloudDeployTable").bootstrapTable('refresh', {url: "../cloudDeploy/findCloudDeployList"});
-                        } else {
-                            Ewin.showMsg('error', '删除云失败！');
-                        }
-                        $('.portal-loading').hide();
-                    },
-                    error: function () {
-                        $('.portal-loading').hide();
-                        Ewin.showMsg('error', '删除云失败！');
-                    }
-                });
-            }
-        });
-    });
 });
 window.operateEvents = {
-    'click .RoleOfDelete': function (e, value, row, index) {
+    'click .instanceLogIn': function (e, value, row, index) {
         debugger
         Ewin.confirm({message: "确认要删除该云吗？"}).on(function (flag) {
             if (flag === true) {
@@ -346,17 +328,5 @@ window.operateEvents = {
             //
             // });
         });
-
-
-        //警告消息提示，默认背景为橘黄色
-        // toastr.warning("你有新消息了!");
-        // //错误消息提示，默认背景为浅红色
-        // toastr.error("你有新消息了!");
-        //带标题的消息框
-        // toastr.success("你有新消息了!","消息提示");
-        // $.growl({ title: "消息标题", message: "消息内容!" });
-        // $.growl.error({    title: "错误标题", message: "错误消息内容!" });
-        // $.growl.notice({title: "提醒标题", message: "提醒消息内容!" });
-        // $.growl.warning({title: "警告标题", message: "警告消息内容!" });
     }
 };
