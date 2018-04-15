@@ -142,13 +142,10 @@ window.operateEvents = {
             if (flag === true) {
                 //操作提示
                 $('.portal-loading').show();
-                var ids = [];
-                ids.push(row.id);
                 $.ajax({
                     type: "get",
                     async: true,
-                    data: {ids: ids},
-                    url: "../user/deleteUser",
+                    url: "../users/" + row.userId + "/delete",
                     success: function (data, status) {
                         if (status == "success") {
                             Ewin.showMsg('success', '删除成功！');
@@ -222,11 +219,11 @@ function findUserList() {
                         value.roleName = '普通用户'
                     }
 
-                    if (value.phone === undefined) {
+                    if (value.phone === undefined || value.phone === '') {
                         value.phone = '-----';
                     }
 
-                    if (value.email === undefined) {
+                    if (value.email === undefined || value.email === '') {
                         value.email = '-----';
                     }
                 });

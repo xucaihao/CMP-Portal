@@ -30,10 +30,6 @@ $(function () {
     //     toolbar: "#floatingIpToolbar"
     // });
 
-
-
-    })
-
     var columns = [
         {
             field: 'checked',
@@ -91,11 +87,6 @@ $(function () {
 
     findCloudDeployList();
 
-    function operateFormatter(value, row, index) {
-        return [
-            '<a class="RoleOfDelete fa fa-trash-o"></a>'
-        ].join('');
-    }
 
     $("#selectCloudVisibility").change(function () {
         //添加所需要执行的操作代码
@@ -110,83 +101,76 @@ $(function () {
         }
     });
 
-$('#btn_addCloudDeploy').click(function () {
-    debugger
-    $("#addCloudDeployModal").modal('hide');
-    $('.portal-loading').show();
-    $.ajax({
-        type: "post",
-        async: true,
-        data: {
-            "type": $('#type option:selected').val(),
-            "name": $("#name").val()
-        },
-        url: "../cloudDeploy/addCloudDeploy",
-        success: function (data, status) {
-            debugger
-            if (status == "success") {
-                Ewin.showMsg('success', '纳管成功！');
-                findCloudDeployList();
-            }
-            $('.portal-loading').hide();
-        },
-        error: function () {
-            Ewin.showMsg('error', '纳管失败！');
-            $('.portal-loading').hide();
-        }
-    });
-
-    //批量删除
-    $('#btn_deleteCloudDeploy').click(function () {
+    $('#btn_addCloudDeploy').click(function () {
         debugger
-        var rows = $("#cloudDeployTable").bootstrapTable("getSelections");
-        if (rows.length === 0) {
-            Ewin.showMsg('warning', '请选中要删除的云');
-            return;
-        }
-
-        var ids = [];
-        for (var i = 0; i < rows.length; i++) {
-            ids.push(rows[i].id);
-        }
-
-        Ewin.confirm({message: "确认要删除选中的云吗？数量：" + rows.length}).on(function (flag) {
-            if (flag === true) {
-                $('.portal-loading').show();
-                $.ajax({
-                    type: "get",
-                    async: true,
-                    traditional: false,
-                    data: {ids: ids},
-                    url: "fd oy",
-                    success: function (data, status) {
-                        debugger
-                        if (status == "success") {
-                            Ewin.showMsg('success', '删除成功！');
-                            findCloudDeployList();
-                        } else {
-                            Ewin.showMsg('error', '删除云失败！');
-                        }
-                        $('.portal-loading').hide();
-                    },
-                    error: function () {
-                        $('.portal-loading').hide();
-                        Ewin.showMsg('error', '删除云失败！');
-                    }
-                });
+        $("#addCloudDeployModal").modal('hide');
+        $('.portal-loading').show();
+        $.ajax({
+            type: "post",
+            async: true,
+            data: {
+                "type": $('#type option:selected').val(),
+                "name": $("#name").val()
+            },
+            url: "../cloudDeploy/addCloudDeploy",
+            success: function (data, status) {
+                debugger
+                if (status == "success") {
+                    Ewin.showMsg('success', '纳管成功！');
+                    findCloudDeployList();
+                }
+                $('.portal-loading').hide();
+            },
+            error: function () {
+                Ewin.showMsg('error', '纳管失败！');
+                $('.portal-loading').hide();
             }
         });
-    });
 
-    function stateFormatter(value, row, index) {
-        if (row.state == true)
-            return {
-                disabled: true,//设置是否可用
-                checked: true//设置选中
-            };
-        return value;
-    }
+        //批量删除
+        $('#btn_deleteCloudDeploy').click(function () {
+            debugger
+            var rows = $("#cloudDeployTable").bootstrapTable("getSelections");
+            if (rows.length === 0) {
+                Ewin.showMsg('warning', '请选中要删除的云');
+                return;
+            }
+
+            var ids = [];
+            for (var i = 0; i < rows.length; i++) {
+                ids.push(rows[i].id);
+            }
+
+            Ewin.confirm({message: "确认要删除选中的云吗？数量：" + rows.length}).on(function (flag) {
+                if (flag === true) {
+                    $('.portal-loading').show();
+                    $.ajax({
+                        type: "get",
+                        async: true,
+                        traditional: false,
+                        data: {ids: ids},
+                        url: "fd oy",
+                        success: function (data, status) {
+                            debugger
+                            if (status == "success") {
+                                Ewin.showMsg('success', '删除成功！');
+                                findCloudDeployList();
+                            } else {
+                                Ewin.showMsg('error', '删除云失败！');
+                            }
+                            $('.portal-loading').hide();
+                        },
+                        error: function () {
+                            $('.portal-loading').hide();
+                            Ewin.showMsg('error', '删除云失败！');
+                        }
+                    });
+                }
+            });
+        });
+    });
 });
+
 window.operateEvents = {
     'click .RoleOfDelete': function (e, value, row, index) {
         debugger
@@ -216,42 +200,7 @@ window.operateEvents = {
                     }
                 });
             }
-
-
-            // if (!e) {
-            //     return;
-            // }
-            // $.ajax({
-            //     type: "post",
-            //     url: "/api/DepartmentApi/Delete",
-            //     data: { "": JSON.stringify(arrselections) },
-            //     success: function (data, status) {
-            //         if (status == "success") {
-            //             toastr.success('提交数据成功');
-            //             $("#tb_departments").bootstrapTable('refresh');
-            //         }
-            //     },
-            //     error: function () {
-            //         toastr.error('Error');
-            //     },
-            //     complete: function () {
-            //
-            //     }
-            //
-            // });
         });
-
-
-        //警告消息提示，默认背景为橘黄色
-        // toastr.warning("你有新消息了!");
-        // //错误消息提示，默认背景为浅红色
-        // toastr.error("你有新消息了!");
-        //带标题的消息框
-        // toastr.success("你有新消息了!","消息提示");
-        // $.growl({ title: "消息标题", message: "消息内容!" });
-        // $.growl.error({    title: "错误标题", message: "错误消息内容!" });
-        // $.growl.notice({title: "提醒标题", message: "提醒消息内容!" });
-        // $.growl.warning({title: "警告标题", message: "警告消息内容!" });
     }
 };
 
@@ -342,4 +291,19 @@ function findCloudDeployList() {
             $(".modal-backdrop").remove();
         }
     });
+}
+
+function stateFormatter(value, row, index) {
+    if (row.state == true)
+        return {
+            disabled: true,//设置是否可用
+            checked: true//设置选中
+        };
+    return value;
+}
+
+function operateFormatter(value, row, index) {
+    return [
+        '<a class="RoleOfDelete fa fa-trash-o"></a>'
+    ].join('');
 }
