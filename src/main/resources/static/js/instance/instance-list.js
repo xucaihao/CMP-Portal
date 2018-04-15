@@ -157,12 +157,6 @@ $(function () {
         });
     }
 
-    function findInstanceAttribute() {
-        debugger
-        alert('');
-        // alert(row);
-    }
-
     //登录主机实例
     $('#openInstanceConsole').click(function () {
         var cloudType = sessionStorage.cloudType;
@@ -175,6 +169,12 @@ $(function () {
             window.open("https://ecs.console.aliyun.com/vnc/index.htm?spm=5176.2020520101.107.d515.65834df558kRdd&instanceId="
                 + instanceId + "&regionId=" + regionId);
         }
+    });
+
+    //登录云主机实例
+    $('#btn_addInstance').click(function () {
+        debugger
+        window.location.href = '../instancesCreatePage';
     });
 
     // 表格中"状态"菜单栏数据格式化
@@ -190,6 +190,7 @@ $(function () {
     // 表格中"ID/云主机名"菜单栏数据格式化
     function idNameFormatter(value, row, index) {
         sessionStorage.instanceId = row.instanceId;
+        sessionStorage.regionId = row.regionId;
         sessionStorage.cloudId = row.cloudId;
         return '<a id="instanceId' + index + '" href="../instanceDetailPage" style="margin: 0 auto">' + row.instanceId + ' </a>'
             + '<p>' + row.instanceName + '</p>';
@@ -213,15 +214,17 @@ $(function () {
     // 表格中"instanceType"菜单栏数据格式化
     function instanceTypeFormatter(value, row, index) {
         var instanceType = row.instanceType;
-        var osName = row.osname.toLowerCase();
+        debugger
+        var osname = row.osname;
+        var osName = row.osname.toLocaleLowerCase();
         if (osName.startsWith("windows"))
-            return '<p>' + row.instanceType + '  <img title=' + osName + ' src=../image/windows.jpg style="width: 20px;vertical-align: middle;"> </p>';
+            return '<p>' + row.instanceType + '  <img title="' + osName + '"' + ' src=../image/windows.jpg style="width: 20px;vertical-align: middle;"> </p>';
         else if (osName.startsWith("centos"))
-            return '<p>' + row.instanceType + '  <img title=' + osName + ' src=../image/centos.jpg style="width: 20px;vertical-align: middle;"> </p>';
+            return '<p>' + row.instanceType + '  <img title="' + osName + '"' + ' src=../image/centos.jpg style="width: 20px;vertical-align: middle;"> </p>';
         else if (osName.startsWith("ubuntu"))
-            return '<p>' + row.instanceType + '  <img title=' + osName + ' src=../image/ubuntu.jpg style="width: 20px;vertical-align: middle;"> </p>';
+            return '<p>' + row.instanceType + '  <img title="' + osName + '"' + ' src=../image/ubuntu.jpg style="width: 20px;vertical-align: middle;"> </p>';
         else if (osName.startsWith("linux"))
-            return '<p>' + row.instanceType + '  <img title=' + osName + ' src=../image/linux.jpg style="width: 20px;vertical-align: middle;"> </p>';
+            return '<p>' + row.instanceType + '  <img title="' + osName + '"' + ' src=../image/linux.jpg style="width: 20px;vertical-align: middle;"> </p>';
         else
             return '<p>' + row.instanceType + '</p>';
     }
