@@ -31,31 +31,7 @@ $(function () {
     // });
 
 
-    $('#btn_addCloudDeploy').click(function () {
-        debugger
-        $("#addCloudDeployModal").modal('hide');
-        $('.portal-loading').show();
-        $.ajax({
-            type: "post",
-            async: true,
-            data: {
-                "type": $('#type option:selected').val(),
-                "name": $("#name").val()
-            },
-            url: "../cloudDeploy/addCloudDeploy",
-            success: function (data, status) {
-                debugger
-                if (status == "success") {
-                    Ewin.showMsg('success', '纳管成功！');
-                    $("#cloudDeployTable").bootstrapTable('refresh', {url: "../cloudDeploy/findCloudDeployList"});
-                }
-                $('.portal-loading').hide();
-            },
-            error: function () {
-                Ewin.showMsg('error', '纳管失败！');
-                $('.portal-loading').hide();
-            }
-        });
+
     })
 
     var columns = [
@@ -115,54 +91,6 @@ $(function () {
 
     findCloudDeployList();
 
-    function findCloudDeployList() {
-        $('.portal-loading').show();
-        $.ajax({
-            type: "get",
-            data: {},
-            dataType: 'json',
-            url: "../clouds",
-            success: function (data) {
-                if ('Success' == data.code) {
-                    debugger
-                    data.data.clouds.forEach(function (value, index, array) {
-                        debugger
-                        if (value.visibility === 'PUBLIC') {
-                            value.visibility = '公有云';
-                        }
-                        if (value.cloudProtocol === 'default') {
-                            value.cloudProtocol = '-----'
-                        }
-
-                        if (value.cloudIp === 'default') {
-                            value.cloudIp = '-----';
-                        }
-
-
-                        if (value.cloudPort === 'default') {
-                            value.cloudPort = '-----';
-                        }
-
-                        if (value.status === 'active') {
-                            value.status = '<p class="fa fa-circle" style="color: #0C9C14;">使用中</p>';
-                        } else {
-                            value.status = '<p class="fa fa-circle" style="color: #8B91A0;">已停用</p>';
-                        }
-
-                    });
-                    $("#cloudDeployTable").bootstrapTable('load', data.data.clouds);
-                }
-
-                $('.portal-loading').hide();
-            },
-            error: function () {
-                $('.portal-loading').hide();
-                Ewin.showMsg('error', '查找云服务商列表失败！');
-                $(".modal-backdrop").remove();
-            }
-        });
-    }
-
     function operateFormatter(value, row, index) {
         return [
             '<a class="RoleOfDelete fa fa-trash-o"></a>'
@@ -174,17 +102,39 @@ $(function () {
 
         var p = $('#selectCloudVisibility option:selected').val();
         if (p === 'PUBLIC') {
-            $('#akDiv').show();
-            $('#skDiv').show();
             $('#userNameDiv').hide();
             $('#passwordDiv').hide();
         } else {
-            $('#akDiv').hide();
-            $('#skDiv').hide();
             $('#userNameDiv').show();
             $('#passwordDiv').show();
         }
-    })
+    });
+
+$('#btn_addCloudDeploy').click(function () {
+    debugger
+    $("#addCloudDeployModal").modal('hide');
+    $('.portal-loading').show();
+    $.ajax({
+        type: "post",
+        async: true,
+        data: {
+            "type": $('#type option:selected').val(),
+            "name": $("#name").val()
+        },
+        url: "../cloudDeploy/addCloudDeploy",
+        success: function (data, status) {
+            debugger
+            if (status == "success") {
+                Ewin.showMsg('success', '纳管成功！');
+                findCloudDeployList();
+            }
+            $('.portal-loading').hide();
+        },
+        error: function () {
+            Ewin.showMsg('error', '纳管失败！');
+            $('.portal-loading').hide();
+        }
+    });
 
     //批量删除
     $('#btn_deleteCloudDeploy').click(function () {
@@ -213,7 +163,7 @@ $(function () {
                         debugger
                         if (status == "success") {
                             Ewin.showMsg('success', '删除成功！');
-                            $("#cloudDeployTable").bootstrapTable('refresh', {url: "../cloudDeploy/findCloudDeployList"});
+                            findCloudDeployList();
                         } else {
                             Ewin.showMsg('error', '删除云失败！');
                         }
@@ -254,7 +204,7 @@ window.operateEvents = {
                     success: function (data, status) {
                         if (status == "success") {
                             Ewin.showMsg('success', '删除成功！');
-                            $("#cloudDeployTable").bootstrapTable('refresh', {url: "../cloudDeploy/findCloudDeployList"});
+                            findCloudDeployList();
                         } else {
                             Ewin.showMsg('error', '删除云失败！');
                         }
@@ -340,6 +290,56 @@ function selectClouds(type) {
             Ewin.showMsg('error', '查询云列表失败！');
         }
     });
+}
+
+function findCloudDeployList() {
+    $('.portal-loading').show();
+    $.ajax({
+        type: "get",
+        data: {},
+        dataType: 'json',
+        url: "../clouds",
+        success: function (data) {
+            if ('Success' == data.code) {
+                data.data.clouds.forEach(function (value, index, array) {
+                    debugger
+                    if (value.visibility === 'PUBLIC') {
+                        value.visibility = '公有云';
+                    }
+
+                    if (value.visibility === 'PRIVATE') {
+                        value.visibility = '私有云';
+                    }
+
+                    if (value.cloudProtocol === 'default') {
+                        value.cloudProtocol = '-----'
+                    }
+
+                    if (value.cloudIp === 'default') {
+                        value.cloudIp = '-----';
+                    }
 
 
+                    if (value.cloudPort === 'default') {
+                        value.cloudPort = '-----';
+                    }
+
+                    if (value.status === 'active') {
+                        value.status = '<p class="fa fa-circle" style="color: #0C9C14;">使用中</p>';
+                    } else {
+                        value.status = '<p class="fa fa-circle" style="color: #8B91A0;">已停用</p>';
+                    }
+
+                });
+                $("#cloudDeployTable").bootstrapTable('load', data.data.clouds);
+            }
+
+            $('.portal-loading').hide();
+        },
+        error: function () {
+            $('.portal-loading').hide();
+            Ewin.showMsg('error', '查找云服务商列表失败！');
+            $(".modal-backdrop").remove();
+        }
+    });
 }

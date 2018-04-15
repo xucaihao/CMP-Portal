@@ -1,36 +1,6 @@
 $(function () {
     $('.dropdown-toggle').dropdown();
     $('.portal-loading').hide();
-    
-    $('#btn_addUser').click(function () {
-        debugger
-        $("#addUserModal").modal('hide');
-        $('.portal-loading').show();
-        $.ajax({
-            type: "post",
-            async: true,
-            data: {
-                "roleName": $('#type option:selected').val(),
-                "userName": $("#name").val(),
-                "password": "000000",
-                "phone": $("#phone").val(),
-                "email": $("#email").val()
-            },
-            url: "../users/register",
-            success: function (data) {
-                debugger
-                if (data.code == "Success") {
-                    Ewin.showMsg('success', '新增用户成功！');
-                    $("#userTable").bootstrapTable('refresh', {url: "../users"});
-                }
-                $('.portal-loading').hide();
-            },
-            error: function () {
-                Ewin.showMsg('error', '新增用户失败！');
-                $('.portal-loading').hide();
-            }
-        });
-    })
 
     var columns = [
         {
@@ -75,39 +45,38 @@ $(function () {
         toolbar: "#userToolbar"
     });
 
-    findUserList();
 
-    function findUserList() {
+    $('#btn_addUser').click(function () {
+        debugger
+        $("#addUserModal").modal('hide');
         $('.portal-loading').show();
         $.ajax({
-            type: "get",
-            data: {},
-            dataType: 'json',
-            url: "../users",
+            type: "post",
+            async: true,
+            data: {
+                "roleName": $('#type option:selected').val(),
+                "userName": $("#name").val(),
+                "password": "000000",
+                "phone": $("#phone").val(),
+                "email": $("#email").val()
+            },
+            url: "../users/register",
             success: function (data) {
-                if ('Success' == data.code) {
-                    debugger
-                    data.data.users.forEach(function (value, index, array) {
-                        debugger
-                        if (value.roleName === 'MANAGER') {
-                            value.roleName = '管理员';
-                        }
-                        if (value.roleName === 'USER') {
-                            value.roleName = '普通用户'
-                        }
-                    });
-                    $("#userTable").bootstrapTable('load', data.data.users);
+                debugger
+                if (data.code == "Success") {
+                    Ewin.showMsg('success', '新增用户成功，初始密码: 000000！');
+                    findUserList();
                 }
-
                 $('.portal-loading').hide();
             },
             error: function () {
+                Ewin.showMsg('error', '新增用户失败！');
                 $('.portal-loading').hide();
-                Ewin.showMsg('error', '查找用户服务商列表失败！');
-                $(".modal-backdrop").remove();
             }
         });
-    }
+    });
+
+    findUserList();
 
     function operateFormatter(value, row, index) {
         return [
@@ -142,7 +111,7 @@ $(function () {
                         debugger
                         if (status == "success") {
                             Ewin.showMsg('success', '删除成功！');
-                            $("#userTable").bootstrapTable('refresh', {url: "../user/findUserList"});
+                            findUserList();
                         } else {
                             Ewin.showMsg('error', '删除用户失败！');
                         }
@@ -183,7 +152,7 @@ window.operateEvents = {
                     success: function (data, status) {
                         if (status == "success") {
                             Ewin.showMsg('success', '删除成功！');
-                            $("#userTable").bootstrapTable('refresh', {url: "../user/findUserList"});
+                            findUserList();
                         } else {
                             Ewin.showMsg('error', '删除用户失败！');
                         }
@@ -233,3 +202,43 @@ window.operateEvents = {
         // $.growl.warning({title: "警告标题", message: "警告消息内容!" });
     }
 };
+
+function findUserList() {
+    $('.portal-loading').show();
+    $.ajax({
+        type: "get",
+        data: {},
+        dataType: 'json',
+        url: "../users",
+        success: function (data) {
+            if ('Success' == data.code) {
+                debugger
+                data.data.users.forEach(function (value, index, array) {
+                    debugger
+                    if (value.roleName === 'MANAGER') {
+                        value.roleName = '管理员';
+                    }
+                    if (value.roleName === 'USER') {
+                        value.roleName = '普通用户'
+                    }
+
+                    if (value.phone === undefined) {
+                        value.phone = '-----';
+                    }
+
+                    if (value.email === undefined) {
+                        value.email = '-----';
+                    }
+                });
+                $("#userTable").bootstrapTable('load', data.data.users);
+            }
+
+            $('.portal-loading').hide();
+        },
+        error: function () {
+            $('.portal-loading').hide();
+            Ewin.showMsg('error', '查找用户服务商列表失败！');
+            $(".modal-backdrop").remove();
+        }
+    });
+}
