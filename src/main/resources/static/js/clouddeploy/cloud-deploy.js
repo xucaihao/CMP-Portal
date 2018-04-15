@@ -184,7 +184,7 @@ window.operateEvents = {
                     type: "get",
                     async: true,
                     data: {ids: ids},
-                    url: "../cloudDeploy/deleteCloudDeploy",
+                    url: "../clouds/" + row.cloudId + "/delete",
                     success: function (data, status) {
                         if (status == "success") {
                             Ewin.showMsg('success', '删除成功！');
