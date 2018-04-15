@@ -10,22 +10,23 @@ $(function () {
             type: "post",
             async: true,
             data: {
-                "type": $('#type option:selected').val(),
-                "name": $("#name").val(),
-                "ak": $("#ak").val(),
-                "sk": $("#sk").val()
+                "roleName": $('#type option:selected').val(),
+                "userName": $("#name").val(),
+                "password": "000000",
+                "phone": $("#phone").val(),
+                "email": $("#email").val()
             },
-            url: "../user/addUser",
-            success: function (data, status) {
+            url: "../users/register",
+            success: function (data) {
                 debugger
-                if (status == "success") {
-                    Ewin.showMsg('success', '添加成功！');
-                    $("#userTable").bootstrapTable('refresh', {url: "../user/findUserList"});
+                if (data.code == "Success") {
+                    Ewin.showMsg('success', '新增用户成功！');
+                    $("#userTable").bootstrapTable('refresh', {url: "../users"});
                 }
                 $('.portal-loading').hide();
             },
             error: function () {
-                Ewin.showMsg('error', '添加失败！');
+                Ewin.showMsg('error', '新增用户失败！');
                 $('.portal-loading').hide();
             }
         });
@@ -38,32 +39,20 @@ $(function () {
             formatter: stateFormatter
         },
         {
-            field: 'cloudName',
-            title: '用户服务商名称'
+            field: 'userName',
+            title: '用户名'
         },
         {
-            field: 'cloudType',
-            title: '类型'
+            field: 'roleName',
+            title: '角色'
         },
         {
-            field: 'visibility',
-            title: '用户种类'
+            field: 'phone',
+            title: '联系电话'
         },
         {
-            field: 'cloudProtocol',
-            title: '协议'
-        },
-        {
-            field: 'cloudIp',
-            title: 'IP'
-        },
-        {
-            field: 'cloudPort',
-            title: '端口'
-        },
-        {
-            field: 'status',
-            title: '状态'
+            field: 'email',
+            title: '邮箱'
         },
         {
             field: 'operate',
@@ -94,36 +83,20 @@ $(function () {
             type: "get",
             data: {},
             dataType: 'json',
-            url: "../clouds",
+            url: "../users",
             success: function (data) {
                 if ('Success' == data.code) {
                     debugger
-                    data.data.clouds.forEach(function (value, index, array) {
+                    data.data.users.forEach(function (value, index, array) {
                         debugger
-                        if (value.visibility === 'PUBLIC') {
-                            value.visibility = '公有用户';
+                        if (value.roleName === 'MANAGER') {
+                            value.roleName = '管理员';
                         }
-                        if (value.cloudProtocol === 'default') {
-                            value.cloudProtocol = '-----'
+                        if (value.roleName === 'USER') {
+                            value.roleName = '普通用户'
                         }
-
-                        if (value.cloudIp === 'default') {
-                            value.cloudIp = '-----';
-                        }
-
-
-                        if (value.cloudPort === 'default') {
-                            value.cloudPort = '-----';
-                        }
-
-                        if (value.status === 'active') {
-                            value.status = '<p class="fa fa-circle" style="color: #0C9C14;">使用中</p>';
-                        } else {
-                            value.status = '<p class="fa fa-circle" style="color: #8B91A0;">已停用</p>';
-                        }
-
                     });
-                    $("#userTable").bootstrapTable('load', data.data.clouds);
+                    $("#userTable").bootstrapTable('load', data.data.users);
                 }
 
                 $('.portal-loading').hide();

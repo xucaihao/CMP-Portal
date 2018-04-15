@@ -49,6 +49,11 @@ public class UserController {
         return new ModelAndView("index_v1.html");
     }
 
+    @RequestMapping("/user/userListHtml")
+    public ModelAndView userListHtml() {
+        return new ModelAndView("pages/user/user.html");
+    }
+
 
     /**
      * 获取在线用户列表
