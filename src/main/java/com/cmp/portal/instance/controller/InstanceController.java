@@ -39,6 +39,11 @@ public class InstanceController {
         return new ModelAndView("pages/instance/instance-detail.html");
     }
 
+    @RequestMapping("/instancesCreatePage")
+    public ModelAndView instancesCreatePage() {
+        return new ModelAndView("pages/instance/instance-create.html");
+    }
+
     @RequestMapping("/instances")
     @ResponseBody
     public ResponseData<ResInstances> describeInstances(@RequestParam(required = false) String cloudId) {
@@ -53,7 +58,8 @@ public class InstanceController {
 
     @RequestMapping("/instances/{instanceId}")
     @ResponseBody
-    public ResponseData<ResInstances> describeInstance(@PathVariable String instanceId, String cloudId) {
+    public ResponseData<ResInstances> describeInstance(
+            @PathVariable String instanceId, String cloudId, String regionId) {
         try {
             logger.info("start");
             User user = WebUtil.getCurrentUser();
