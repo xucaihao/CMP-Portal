@@ -2,7 +2,6 @@ $(function () {
     $('.dropdown-toggle').dropdown();
     $('.portal-loading').hide();
 
-
     var columns = [
         {
             field: 'checked',
@@ -164,6 +163,20 @@ $(function () {
         // alert(row);
     }
 
+    //登录主机实例
+    $('#openInstanceConsole').click(function () {
+        var cloudType = sessionStorage.cloudType;
+        var regionId = sessionStorage.regionId;
+        var instanceId = sessionStorage.instanceId;
+        if (cloudType === "tencent-cloud") {
+            window.open("https://iaas.qcloud.com/vnc?regionId=" + regionId + "&instanceId=" + instanceId);
+        }
+        if (cloudType === "ali-cloud") {
+            window.open("https://ecs.console.aliyun.com/vnc/index.htm?spm=5176.2020520101.107.d515.65834df558kRdd&instanceId="
+                + instanceId + "&regionId=" + regionId);
+        }
+    });
+
     // 表格中"状态"菜单栏数据格式化
     function stateFormatter(value, row, index) {
         if (row.state == true)
@@ -202,13 +215,13 @@ $(function () {
         var instanceType = row.instanceType;
         var osName = row.osname.toLowerCase();
         if (osName.startsWith("windows"))
-            return '<p>' + row.instanceType + '  <img src=../image/windows.jpg style="width: 20px;vertical-align: middle;"> </p>';
+            return '<p>' + row.instanceType + '  <img title=' + osName + ' src=../image/windows.jpg style="width: 20px;vertical-align: middle;"> </p>';
         else if (osName.startsWith("centos"))
-            return '<p>' + row.instanceType + '  <img src=../image/centos.jpg style="width: 20px;vertical-align: middle;"> </p>';
+            return '<p>' + row.instanceType + '  <img title=' + osName + ' src=../image/centos.jpg style="width: 20px;vertical-align: middle;"> </p>';
         else if (osName.startsWith("ubuntu"))
-            return '<p>' + row.instanceType + '  <img src=../image/ubuntu.jpg style="width: 20px;vertical-align: middle;"> </p>';
+            return '<p>' + row.instanceType + '  <img title=' + osName + ' src=../image/ubuntu.jpg style="width: 20px;vertical-align: middle;"> </p>';
         else if (osName.startsWith("linux"))
-            return '<p>' + row.instanceType + '  <img src=../image/linux.jpg style="width: 20px;vertical-align: middle;"> </p>';
+            return '<p>' + row.instanceType + '  <img title=' + osName + ' src=../image/linux.jpg style="width: 20px;vertical-align: middle;"> </p>';
         else
             return '<p>' + row.instanceType + '</p>';
     }
@@ -265,68 +278,21 @@ $(function () {
 
     function operateFormatter(value, row, index) {
         return [
-            '<button id="instanceLogIn" type="button" class="btn btn-primary" data-toggle="modal" data-target="#instanceLogIn">'
-            + '<span class="fa fa-tv" aria-hidden="true"></span>登录 </button>',
-            '<a class="RoleOfDelete fa fa-paypal"></a>',
-            '<a class="RoleOfDelete fa fa-list"></a>'
+            row.status.toLowerCase() !== "running" ?
+                ('<a class="InstanceLogInBlack fa fa-tv" title="请确认云主机处于运行状态" style="color: #5E5E5E"></a>&nbsp;&nbsp;&nbsp;')
+                : ('<a class="InstanceLogInBule fa fa-tv" title="登录" style="color: #0e9aef;"></a>&nbsp;&nbsp;&nbsp;'),
+            '<a class="InstanceFee  fa fa-paypal" title="续费" style="color: #0e9aef;"></a>&nbsp;&nbsp;&nbsp;',
+            '<a class="InstanceMore fa fa-list" title="更多操作" style="color: #0e9aef;"></a>'
         ].join('');
     }
 
 
-
 });
 window.operateEvents = {
-    'click .instanceLogIn': function (e, value, row, index) {
-        debugger
-        Ewin.confirm({message: "确认要删除该云吗？"}).on(function (flag) {
-            if (flag === true) {
-                //操作提示
-                $('.portal-loading').show();
-                var ids = [];
-                ids.push(row.id);
-                $.ajax({
-                    type: "get",
-                    async: true,
-                    data: {ids: ids},
-                    url: "../cloudDeploy/deleteCloudDeploy",
-                    success: function (data, status) {
-                        if (status == "success") {
-                            Ewin.showMsg('success', '删除成功！');
-                            $("#cloudDeployTable").bootstrapTable('refresh', {url: "../cloudDeploy/findCloudDeployList"});
-                        } else {
-                            Ewin.showMsg('error', '删除云失败！');
-                        }
-                        $('.portal-loading').hide();
-                    },
-                    error: function () {
-                        $('.portal-loading').hide();
-                        Ewin.showMsg('error', '删除云失败！');
-                    }
-                });
-            }
-
-
-            // if (!e) {
-            //     return;
-            // }
-            // $.ajax({
-            //     type: "post",
-            //     url: "/api/DepartmentApi/Delete",
-            //     data: { "": JSON.stringify(arrselections) },
-            //     success: function (data, status) {
-            //         if (status == "success") {
-            //             toastr.success('提交数据成功');
-            //             $("#tb_departments").bootstrapTable('refresh');
-            //         }
-            //     },
-            //     error: function () {
-            //         toastr.error('Error');
-            //     },
-            //     complete: function () {
-            //
-            //     }
-            //
-            // });
-        });
+    'click .InstanceLogInBule': function (e, value, row, index) {
+        sessionStorage.cloudType = row.cloudType;
+        sessionStorage.regionId = row.regionId;
+        sessionStorage.instanceId = row.instanceId;
+        $("#instanceLogIn").modal('show');
     }
 };

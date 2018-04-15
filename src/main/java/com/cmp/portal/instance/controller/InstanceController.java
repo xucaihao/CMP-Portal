@@ -53,7 +53,7 @@ public class InstanceController {
 
     @RequestMapping("/instances/{instanceId}")
     @ResponseBody
-    public ResponseData<ResInstances> describeInstance(@PathVariable String instanceId , String cloudId) {
+    public ResponseData<ResInstances> describeInstance(@PathVariable String instanceId, String cloudId) {
         try {
             logger.info("start");
             User user = WebUtil.getCurrentUser();
@@ -65,4 +65,5 @@ public class InstanceController {
             return ResponseData.failure(e.getMessage());
         }
     }
+
 }
