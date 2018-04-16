@@ -1,8 +1,10 @@
+var visibility = 'PUBLIC';
 $(function () {
     $('.dropdown-toggle').dropdown();
     $('.portal-loading').hide();
-    $('#userNameDiv').hide();
-    $('#passwordDiv').hide();
+    $('#ipDiv').hide();
+    $('#portDiv').hide();
+
 
     //模拟数据填充bootstrap-table表
     var data = {
@@ -82,22 +84,21 @@ $(function () {
         pageList: [5, 10, 15],//可供选择的每页的行数（*）
         sidePagination: "client", //分页方式：client客户端分页，server服务端分页（*）
         search: true,
-        toolbar: "#cloudDeployToolbar"
+        toolbar: "#cloudDeployToolbar",
     });
 
     findCloudDeployList();
-
+    selectClouds('PUBLIC');
 
     $("#selectCloudVisibility").change(function () {
         //添加所需要执行的操作代码
-
         var p = $('#selectCloudVisibility option:selected').val();
         if (p === 'PUBLIC') {
-            $('#userNameDiv').hide();
-            $('#passwordDiv').hide();
+            $('#ipDiv').hide();
+            $('#portDiv').hide();
         } else {
-            $('#userNameDiv').show();
-            $('#passwordDiv').show();
+            $('#ipDiv').show();
+            $('#portDiv').show();
         }
     });
 
@@ -105,17 +106,33 @@ $(function () {
         debugger
         $("#addCloudDeployModal").modal('hide');
         $('.portal-loading').show();
+        var data;
+        if (visibility === 'PUBLIC') {
+            data = {
+                "cloudType": $('#types option:selected').val(),
+                "cloudName": $("#name").val(),
+                "visibility": visibility,
+                cloudProtocol: 'HTTP'
+            }
+        } else {
+            data = {
+                "cloudType": $('#types option:selected').val(),
+                "cloudName": $("#name").val(),
+                "visibility": visibility,
+                cloudProtocol: 'HTTP',
+                cloudIp: $('#ip').val(),
+                cloudPort: $('#port').val()
+            }
+        }
+
         $.ajax({
             type: "post",
             async: true,
-            data: {
-                "type": $('#type option:selected').val(),
-                "name": $("#name").val()
-            },
-            url: "../cloudDeploy/addCloudDeploy",
+            data: data,
+            url: "../clouds/create",
             success: function (data, status) {
                 debugger
-                if (status == "success") {
+                if (data.code === 'Success') {
                     Ewin.showMsg('success', '纳管成功！');
                     findCloudDeployList();
                 }
@@ -148,8 +165,8 @@ $(function () {
                         type: "get",
                         async: true,
                         traditional: false,
-                        data: {ids: ids},
-                        url: "fd oy",
+                        data: {cloudIds: ids},
+                        url: "..//clouds/delete",
                         success: function (data, status) {
                             debugger
                             if (status == "success") {
@@ -183,8 +200,8 @@ window.operateEvents = {
                 $.ajax({
                     type: "get",
                     async: true,
-                    data: {ids: ids},
-                    url: "../clouds/" + row.cloudId + "/delete",
+                    data: {cloudIds: ids},
+                    url: "..//clouds/delete",
                     success: function (data, status) {
                         if (status == "success") {
                             Ewin.showMsg('success', '删除成功！');
@@ -207,11 +224,13 @@ window.operateEvents = {
 function selectClouds(type) {
     debugger
     if (type === 'PUBLIC') {
-        $('#userNameDiv').hide();
-        $('#passwordDiv').hide();
+        $('#ipDiv').hide();
+        $('#portDiv').hide();
+        visibility = 'PUBLIC';
     } else {
-        $('#userNameDiv').show();
-        $('#passwordDiv').show();
+        $('#ipDiv').show();
+        $('#portDiv').show();
+        visibility = 'PRIVATE';
     }
 
     $.ajax({
@@ -225,7 +244,7 @@ function selectClouds(type) {
             if (data.code == "Success") {
                 var tempAjax = "";
                 $.each(data.data.cloudTypes, function (i, n) {
-                    tempAjax += "<option value='" + n.id + "'>" + n.typeName + "</option>";
+                    tempAjax += "<option value='" + n.typeValue + "'>" + n.typeName + "</option>";
                 });
                 $("#types").empty();
                 $("#types").append(tempAjax);
@@ -306,4 +325,8 @@ function operateFormatter(value, row, index) {
     return [
         '<a class="RoleOfDelete fa fa-trash-o"></a>'
     ].join('');
+}
+
+function doSomething() {
+    alert('ok');
 }

@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -226,7 +227,7 @@ public class UserController {
      */
     @RequestMapping("/users/delete")
     @ResponseBody
-    public ResponseData deleteUsers(List<String> userIds) {
+    public ResponseData deleteUsers(@RequestParam("userIds[]") List<String> userIds) {
         try {
             User user = WebUtil.getCurrentUser();
             List<CompletableFuture<Map<String, String>>> futures = userIds.stream().map(userId ->

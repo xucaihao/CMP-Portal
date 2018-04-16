@@ -93,9 +93,9 @@ $(function () {
             return;
         }
 
-        var ids = [];
+        var userIds = [];
         for (var i = 0; i < rows.length; i++) {
-            ids.push(rows[i].id);
+            userIds.push(rows[i].userId);
         }
 
         Ewin.confirm({message: "确认要删除选中的用户吗？数量：" + rows.length}).on(function (flag) {
@@ -105,8 +105,8 @@ $(function () {
                     type: "get",
                     async: true,
                     traditional: false,
-                    data: {ids: ids},
-                    url: "fd oy",
+                    data: {userIds: userIds},
+                    url: "../users/delete",
                     success: function (data, status) {
                         debugger
                         if (status == "success") {
@@ -134,6 +134,11 @@ $(function () {
             };
         return value;
     }
+
+    $("#addUserModal").on("hidden.bs.modal", function() {
+        debugger
+
+    });
 });
 window.operateEvents = {
     'click .RoleOfDelete': function (e, value, row, index) {
@@ -142,10 +147,14 @@ window.operateEvents = {
             if (flag === true) {
                 //操作提示
                 $('.portal-loading').show();
+
+                var userIds = [];
+                userIds.push(row.userId);
                 $.ajax({
                     type: "get",
                     async: true,
-                    url: "../users/" + row.userId + "/delete",
+                    data: {userIds: userIds},
+                    url: "../users/delete",
                     success: function (data, status) {
                         if (status == "success") {
                             Ewin.showMsg('success', '删除成功！');

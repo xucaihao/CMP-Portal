@@ -186,7 +186,7 @@ public class CloudController {
      */
     @RequestMapping("/clouds/delete")
     @ResponseBody
-    public ResponseData deleteClouds(List<String> cloudIds) {
+    public ResponseData deleteClouds(@RequestParam("cloudIds[]") List<String> cloudIds) {
         try {
             User user = WebUtil.getCurrentUser();
             List<CompletableFuture<Map<String, String>>> futures = cloudIds.stream().map(cloudId ->

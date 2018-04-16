@@ -71,7 +71,14 @@ $(function () {
         pageList: [5, 10, 15],//可供选择的每页的行数（*）
         sidePagination: "client", //分页方式：client客户端分页，server服务端分页（*）
         search: true,
-        toolbar: "#instancesToolbar"
+        toolbar: "#instancesToolbar",
+        onCheck: function (row) {
+            var selectedInstances = $("#instancesTable").bootstrapTable("getSelections");
+            //循环处理判断是否存
+        },
+        onCheckAll:function(rows){
+            var selectedInstances = $("#instancesTable").bootstrapTable("getSelections");
+        }
     });
 
     // 查询主机列表
