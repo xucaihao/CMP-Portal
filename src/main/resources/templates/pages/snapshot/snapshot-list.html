@@ -47,42 +47,22 @@
 <body class="gray-bg">
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="ibox-title">
-        <h4>镜像</h4>
+        <h4>快照</h4>
     </div>
     <div class="ibox-content">
         <div class="row row-lg">
             <div class="col-sm-12">
                 <div class="example-wrap">
-                    <ul class="nav nav-tabs">
-                        <li id="btn_publicImages" class="active">
-                            <a data-toggle="tab" href="#tab-1" aria-expanded="true">
-                                <i class="fa fa-unlock-alt"></i>
-                                公有镜像
-                            </a>
-                        </li>
-                        <li id="btn_privateImages" class="">
-                            <a data-toggle="tab" href="#tab-2" aria-expanded="false">
-                                <i class="fa fa-lock"></i>
-                                自定义镜像
-                            </a>
-                        </li>
-                        <li class="">
-                            <a id="btn_sharedImages" data-toggle="tab" href="#tab-2" aria-expanded="false">
-                                <i class="fa fa-share-alt"></i>
-                                共享镜像
-                            </a>
-                        </li>
-                    </ul>
                     <div class="example">
-                        <table id="imagesTable" data-mobile-responsive="true"
+                        <table id="snapshotsTable" data-mobile-responsive="true"
                                class="table table-striped"
                                data-search="true"
                                data-show-refresh="true"
                                data-show-toggle="true"
                                data-show-columns="true">
                         </table>
-                        <div id="imagesToolbar">
-                            <button id="btn_deleteImages" type="button" class="btn btn-primary" disabled="true">
+                        <div id="sapshotsToolbar">
+                            <button id="btn_deleteSnapshots" type="button" class="btn btn-primary" disabled="true">
                                 <span class="fa fa-trash-o" aria-hidden="true"></span>删除
                             </button>
                         </div>
@@ -106,7 +86,7 @@
     <div class="object"></div>
     <div class="object"></div>
 </div>
-<script src="../js/image/image-list.js"></script>
+<script src="../js/snapshot/snapshot-list.js"></script>
 
 </body>
 

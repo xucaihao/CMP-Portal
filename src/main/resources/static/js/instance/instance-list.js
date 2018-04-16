@@ -137,7 +137,8 @@ $(function () {
             dataType: 'json',
             url: "../instances",
             success: function (data) {
-                if ('Success' == data.code) {
+                if ('Success' === data.code) {
+                    $('.portal-loading').hide();
                     $("#instancesTable").bootstrapTable('load', data.data.instances);
                     for (var i = 0; i < data.data.instances.length; i++) {
                         var status = "#status" + i;
@@ -146,8 +147,14 @@ $(function () {
                             "left": ($(status).parent().width() - $(status).width()) / 2 + "px"
                         });
                     }
+                } else {
+                    $('.portal-loading').hide();
+                    if (data.message == null || data.message === "")
+                        Ewin.showMsg('error', '查询主机列表失败！');
+                    else
+                        Ewin.showMsg('error', data.message);
+                    $(".modal-backdrop").remove();
                 }
-                $('.portal-loading').hide();
             },
             error: function () {
                 $('.portal-loading').hide();
@@ -181,10 +188,14 @@ $(function () {
     function stateFormatter(value, row, index) {
         debugger
         if (row.state === true) {
-            if (row.status.toLowerCase() === "running")
-                ('#btn_closeInstance').css('diabled', 'false');
-            if (row.status.toLowerCase() === "stopped" )
-                ('#btn_openInstance').css('diabled', 'false');
+            if (row.status.toLowerCase() === "running") {
+                ('#btn_closeInstance').css(hidden, 'false');
+                ('#btn_openInstance').css(hidden, 'true');
+            }
+            if (row.status.toLowerCase() === "stopped") {
+                ('#btn_closeInstance').css(hidden, 'true');
+                ('#btn_openInstance').css(hidden, 'false');
+            }
             return {
                 disabled: true,//设置是否可用
                 checked: true//设置选中

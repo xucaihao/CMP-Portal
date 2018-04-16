@@ -34,6 +34,7 @@ $(function () {
         },
         {
             field: 'size',
+            align: 'center',
             title: '容量(GB)'
         },
         {
@@ -55,6 +56,7 @@ $(function () {
         {
             field: 'creationTime',
             title: '创建时间',
+            align: 'center',
             formatter: creationTimeFormatter
         },
         {
@@ -91,7 +93,10 @@ $(function () {
                     $('.portal-loading').hide();
                 } else {
                     $('.portal-loading').hide();
-                    Ewin.showMsg('error', data.message);
+                    if (data.message == null || data.message === "")
+                        Ewin.showMsg('error', '查询镜像列表失败！');
+                    else
+                        Ewin.showMsg('error', data.message);
                     $(".modal-backdrop").remove();
                 }
             },
@@ -103,18 +108,88 @@ $(function () {
         });
     }
 
-    //登录主机实例
-    $('#openInstanceConsole').click(function () {
-        var cloudType = sessionStorage.cloudType;
-        var regionId = sessionStorage.regionId;
-        var instanceId = sessionStorage.instanceId;
-        if (cloudType === "tencent-cloud") {
-            window.open("https://iaas.qcloud.com/vnc?regionId=" + regionId + "&instanceId=" + instanceId);
-        }
-        if (cloudType === "ali-cloud") {
-            window.open("https://ecs.console.aliyun.com/vnc/index.htm?spm=5176.2020520101.107.d515.65834df558kRdd&instanceId="
-                + instanceId + "&regionId=" + regionId);
-        }
+    //公共镜像列表
+    $('#btn_publicImages').click(function () {
+        $.ajax({
+            type: "get",
+            data: {},
+            dataType: 'json',
+            url: "../publicImages",
+            success: function (data) {
+                if ('Success' === data.code) {
+                    $("#imagesTable").bootstrapTable('load', data.data.images);
+                    $('.portal-loading').hide();
+                } else {
+                    $('.portal-loading').hide();
+                    if (data.message == null || data.message === "")
+                        Ewin.showMsg('error', '查询镜像列表失败！');
+                    else
+                        Ewin.showMsg('error', data.message);
+                    $(".modal-backdrop").remove();
+                }
+            },
+            error: function () {
+                $('.portal-loading').hide();
+                Ewin.showMsg('error', '查询镜像列表失败！');
+                $(".modal-backdrop").remove();
+            }
+        });
+    });
+
+    //自定义镜像列表
+    $('#btn_privateImages').click(function () {
+        $.ajax({
+            type: "get",
+            data: {},
+            dataType: 'json',
+            url: "../privateImages",
+            success: function (data) {
+                if ('Success' === data.code) {
+                    $("#imagesTable").bootstrapTable('load', data.data.images);
+                    $('.portal-loading').hide();
+                } else {
+                    $('.portal-loading').hide();
+                    if (data.message == null || data.message === "")
+                        Ewin.showMsg('error', '查询镜像列表失败！');
+                    else
+                        Ewin.showMsg('error', data.message);
+                    $(".modal-backdrop").remove();
+                }
+            },
+            error: function () {
+                $('.portal-loading').hide();
+                Ewin.showMsg('error', '查询镜像列表失败！');
+                $(".modal-backdrop").remove();
+            }
+        });
+    });
+
+    //共享镜像列表
+    $('#btn_sharedImages').click(function () {
+        $.ajax({
+            type: "get",
+            data: {},
+            dataType: 'json',
+            url: "../sharedImages",
+            success: function (data) {
+                if ('Success' === data.code) {
+                    $("#imagesTable").bootstrapTable('load', data.data.images);
+                    $('.portal-loading').hide();
+                } else {
+                    $('.portal-loading').hide();
+                    if (data.message == null || data.message === "")
+                        Ewin.showMsg('error', '查询镜像列表失败！');
+                    else
+                        Ewin.showMsg('error', data.message);
+                    $(".modal-backdrop").remove();
+                }
+            },
+            error: function () {
+                $('.portal-loading').hide();
+                Ewin.showMsg('error', '查询镜像列表失败！');
+                $(".modal-backdrop").remove();
+            }
+        });
     });
 
     // 表格中"状态"菜单栏数据格式化
@@ -158,9 +233,9 @@ $(function () {
         if (visibility.indexOf("public") >= 0 || visibility.indexOf("system") >= 0)
             res = '<p id="status' + index + '"> 公共镜像</p>';
         if (visibility.indexOf("private") >= 0 || visibility.indexOf("self") >= 0)
-            res = '<p id="status' + index + '" class="fa fa-circle" style="color: #8B91A0;"> 已停止</p> ';
+            res = '<p id="status' + index + '"> 自定义镜像</p> ';
         if (visibility.indexOf("shared") >= 0 || visibility.indexOf("others") >= 0)
-            res = '<p id="status' + index + '" class="fa fa-spinner" style="color: #0C9C14;"> 启动中</p> ';
+            res = '<p id="status' + index + '"> 共享镜像</p> ';
         return res;
     }
 
@@ -202,6 +277,7 @@ $(function () {
 
     // 表格中"创建时间"菜单栏数据格式化
     function creationTimeFormatter(value, row, index) {
+        debugger
         var creationTime = row.creationTime;
         var res = "---";
         if (creationTime != null || creationTime !== "") {
@@ -212,22 +288,24 @@ $(function () {
     }
 
     function operateFormatter(value, row, index) {
-        return [
-            row.status.toLowerCase() !== "running" ?
-                ('<a class="InstanceLogInBlack fa fa-tv" title="请确认云主机处于运行状态" style="color: #5E5E5E"></a>&nbsp;&nbsp;&nbsp;')
-                : ('<a class="InstanceLogInBule fa fa-tv" title="登录" style="color: #0e9aef;"></a>&nbsp;&nbsp;&nbsp;'),
-            '<a class="InstanceFee  fa fa-paypal" title="续费" style="color: #0e9aef;"></a>&nbsp;&nbsp;&nbsp;',
-            '<a class="InstanceMore fa fa-list" title="更多操作" style="color: #0e9aef;"></a>'
-        ].join('');
+        var visibility = row.imageOwnerAlias.toLocaleLowerCase();
+        if (visibility.indexOf("public") >= 0 || visibility.indexOf("system") >= 0) {
+            return '<a class="InstanceLogInBlack fa fa-plus-square-o" title="创建云主机" style="color: #0e9aef;"></a>';
+        } else {
+            return [
+                ('<a class="InstanceLogInBlack fa fa-plus-square-o" title="创建云主机" style="color: #0e9aef;"></a>&nbsp;&nbsp;&nbsp;'),
+                '<a class="InstanceFee  fa fa-share-alt" title="共享" style="color: #0e9aef;"></a>&nbsp;&nbsp;&nbsp;',
+                '<a class="InstanceMore fa fa-list" title="更多操作" style="color: #0e9aef;"></a>'
+            ].join('');
+        }
     }
-
 
 });
 window.operateEvents = {
-    'click .InstanceLogInBule': function (e, value, row, index) {
-        sessionStorage.cloudType = row.cloudType;
-        sessionStorage.regionId = row.regionId;
-        sessionStorage.instanceId = row.instanceId;
-        $("#instanceLogIn").modal('show');
-    }
+    // 'click .InstanceLogInBule': function (e, value, row, index) {
+    //     sessionStorage.cloudType = row.cloudType;
+    //     sessionStorage.regionId = row.regionId;
+    //     sessionStorage.instanceId = row.instanceId;
+    //     $("#instanceLogIn").modal('show');
+    // }
 };
