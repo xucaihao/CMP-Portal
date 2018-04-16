@@ -20,7 +20,14 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+
+import static com.cmp.portal.common.Constance.TIME_OUT_SECONDS;
+import static java.util.stream.Collectors.toList;
 
 @Controller
 @RequestMapping("")
@@ -193,19 +200,77 @@ public class UserController {
         }
     }
 
+//    /**
+//     * 删除用户
+//     *
+//     * @param userId 用户id
+//     * @return 操作结果
+//     */
+//    @RequestMapping("/users/{userId}/delete")
+//    @ResponseBody
+//    public ResponseData deleteUser(@PathVariable String userId) {
+//        try {
+//            User user = WebUtil.getCurrentUser();
+//            userService.deleteUser(user, userId);
+//            return ResponseData.success();
+//        } catch (Exception e) {
+//            return ResponseData.failure(e.getMessage());
+//        }
+//    }
+
     /**
-     * 删除用户
+     * 批量删除用户
      *
-     * @param userId 用户id
+     * @param userIds 删除用户id列表
      * @return 操作结果
      */
-    @RequestMapping("/users/{userId}/delete")
+    @RequestMapping("/users/delete")
     @ResponseBody
-    public ResponseData deleteUser(@PathVariable String userId) {
+    public ResponseData deleteUsers(List<String> userIds) {
         try {
             User user = WebUtil.getCurrentUser();
-            userService.deleteUser(user, userId);
-            return ResponseData.success();
+            List<CompletableFuture<Map<String, String>>> futures = userIds.stream().map(userId ->
+                    CompletableFuture.supplyAsync(() -> {
+                        Map<String, String> response = new HashMap<>(16);
+                        try {
+                            userService.deleteUser(user, userId);
+                            response.put("code", "success");
+                            response.put("msg", "");
+                            return response;
+                        } catch (Exception e) {
+                            response.put("code", "fail");
+                            response.put("msg", e.getMessage());
+                            return response;
+                        }
+                    })).collect(toList());
+            List<Map<String, String>> failedDel = futures.stream().map(vo -> {
+                try {
+                    return vo.get(TIME_OUT_SECONDS, TimeUnit.SECONDS);
+                } catch (Exception e) {
+                    return null;
+                }
+            }).filter(x -> null != x && "fail".equals(x.get("code"))).collect(toList());
+            int delNum = userIds.size();
+            int failedNum = failedDel.size();
+            int successNum = delNum - failedNum;
+            Map<String, Object> resMap = new HashMap<>(16);
+            //删除一个用户失败，直接返回失败信息
+            if (1 == delNum && 1 == failedNum) {
+                return ResponseData.failure(failedDel.get(0).get("msg"));
+            } else {
+                resMap.put("successNum", successNum);
+                resMap.put("failNum", failedNum);
+                //全部删除成功
+                if (delNum == successNum) {
+                    return ResponseData.success(resMap);
+                } else if (delNum == failedNum) {
+                    //删除多个用户，全部删除失败
+                    return ResponseData.failure(resMap);
+                } else {
+                    //删除多个用户，部分成功
+                    return ResponseData.warning(resMap);
+                }
+            }
         } catch (Exception e) {
             return ResponseData.failure(e.getMessage());
         }

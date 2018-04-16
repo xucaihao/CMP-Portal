@@ -160,23 +160,23 @@ public class CloudController {
         }
     }
 
-    /**
-     * 删除云
-     *
-     * @param cloudId 云id
-     * @return 操作结果
-     */
-    @RequestMapping("/clouds/{cloudId}/delete")
-    @ResponseBody
-    public ResponseData deleteCloud(@PathVariable String cloudId) {
-        try {
-            User user = WebUtil.getCurrentUser();
-            cloudService.deleteCloud(user, cloudId);
-            return ResponseData.success();
-        } catch (Exception e) {
-            return ResponseData.failure(e.getMessage());
-        }
-    }
+//    /**
+//     * 删除云
+//     *
+//     * @param cloudId 云id
+//     * @return 操作结果
+//     */
+//    @RequestMapping("/clouds/{cloudId}/delete")
+//    @ResponseBody
+//    public ResponseData deleteCloud(@PathVariable String cloudId) {
+//        try {
+//            User user = WebUtil.getCurrentUser();
+//            cloudService.deleteCloud(user, cloudId);
+//            return ResponseData.success();
+//        } catch (Exception e) {
+//            return ResponseData.failure(e.getMessage());
+//        }
+//    }
 
     /**
      * 批量删除云

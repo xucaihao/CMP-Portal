@@ -67,7 +67,7 @@ $(function () {
         columns: columns,
         pagination: true,//是否开启分页（*）
         pageNumber: 1,//初始化加载第一页，默认第一页
-        pageSize: 5,//每页的记录行数（*）
+        pageSize: 10,//每页的记录行数（*）
         pageList: [5, 10, 15],//可供选择的每页的行数（*）
         sidePagination: "client", //分页方式：client客户端分页，server服务端分页（*）
         search: true,
@@ -179,11 +179,17 @@ $(function () {
 
     // 表格中"状态"菜单栏数据格式化
     function stateFormatter(value, row, index) {
-        if (row.state == true)
+        debugger
+        if (row.state === true) {
+            if (row.status.toLowerCase() === "running")
+                ('#btn_closeInstance').css('diabled', 'false');
+            if (row.status.toLowerCase() === "stopped" )
+                ('#btn_openInstance').css('diabled', 'false');
             return {
                 disabled: true,//设置是否可用
                 checked: true//设置选中
             };
+        }
         return value;
     }
 
