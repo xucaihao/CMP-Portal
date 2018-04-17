@@ -166,7 +166,7 @@ $(function () {
                         async: true,
                         traditional: false,
                         data: {cloudIds: ids},
-                        url: "..//clouds/delete",
+                        url: "../clouds/delete",
                         success: function (data, status) {
                             debugger
                             if (status == "success") {
