@@ -1,13 +1,16 @@
 package com.cmp.portal.user.controller;
 
+import ch.qos.logback.core.pattern.util.RegularEscapeUtil;
 import com.cmp.portal.common.ResponseData;
 import com.cmp.portal.common.SessionCounter;
 import com.cmp.portal.common.WebUtil;
 import com.cmp.portal.user.model.User;
+import com.cmp.portal.user.model.UserMappingEntity;
 import com.cmp.portal.user.model.req.ReqAddMapping;
 import com.cmp.portal.user.model.req.ReqModMapping;
 import com.cmp.portal.user.model.req.ReqUser;
 import com.cmp.portal.user.model.res.ResUser;
+import com.cmp.portal.user.model.res.ResUserMappings;
 import com.cmp.portal.user.model.res.ResUsers;
 import com.cmp.portal.user.service.UserService;
 import org.slf4j.Logger;
@@ -23,6 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +70,10 @@ public class UserController {
         return new ModelAndView("pages/user/user.html");
     }
 
-
+    @RequestMapping("/userMapping/userMappingListHtml")
+    public ModelAndView userMappingListHtml() {
+        return new ModelAndView("pages/user/user-mapping.html");
+    }
     /**
      * 获取在线用户列表
      *
@@ -306,6 +313,23 @@ public class UserController {
             return ResponseData.failure(e.getMessage());
         }
     }
+
+    @RequestMapping("/userMappings")
+    @ResponseBody
+    public ResponseData findUserMappings() {
+        UserMappingEntity mapping = new UserMappingEntity();
+        mapping.setAccessKey("df3434345d94sdr445df");
+        mapping.setAuthInfo("s0w4fsd458fsdw4sdfsdf34wxcer5e4f");
+        mapping.setCloudId("wrwer9xc87wew79w34jdf4534xc");
+        mapping.setCmpUserId("wr897989wr7789wer89werkwer");
+        mapping.setCmpUserName("xiaoming");
+        List<UserMappingEntity> userMappingEntities = new ArrayList<>();
+        userMappingEntities.add(mapping);
+        ResUserMappings userMappings = new ResUserMappings();
+        userMappings.setUserMappings(userMappingEntities);
+        return ResponseData.success(userMappings);
+    }
+
 
     /**
      * 修改用户映射关系
