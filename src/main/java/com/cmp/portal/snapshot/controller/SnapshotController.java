@@ -5,6 +5,8 @@ import com.cmp.portal.common.WebUtil;
 import com.cmp.portal.snapshot.model.res.ResSnapshots;
 import com.cmp.portal.snapshot.service.SnapshotService;
 import com.cmp.portal.user.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,6 +18,8 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @RequestMapping("")
 public class SnapshotController {
+
+    private static final Logger logger = LoggerFactory.getLogger(SnapshotController.class);
 
     @Autowired
     private SnapshotService snapshotService;
@@ -44,6 +48,7 @@ public class SnapshotController {
             ResponseEntity<ResSnapshots> response = snapshotService.describeSnapshots(user, cloudId);
             return ResponseData.success(response.getBody());
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }

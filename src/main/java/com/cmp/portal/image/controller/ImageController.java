@@ -5,10 +5,10 @@ import com.cmp.portal.common.WebUtil;
 import com.cmp.portal.image.model.res.ResImageInfo;
 import com.cmp.portal.image.model.res.ResImages;
 import com.cmp.portal.image.service.ImageService;
-import com.cmp.portal.instance.model.res.ResInstances;
 import com.cmp.portal.user.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +22,8 @@ import static java.util.stream.Collectors.toList;
 @Controller
 @RequestMapping("")
 public class ImageController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ImageController.class);
 
     @Autowired
     private ImageService imageService;
@@ -55,6 +57,7 @@ public class ImageController {
                     .collect(toList());
             return ResponseData.success(new ResImages(resImages));
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }
@@ -78,6 +81,7 @@ public class ImageController {
                     .collect(toList());
             return ResponseData.success(new ResImages(resImages));
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }
@@ -101,6 +105,7 @@ public class ImageController {
                     .collect(toList());
             return ResponseData.success(new ResImages(resImages));
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }

@@ -10,6 +10,8 @@ import com.cmp.portal.cloud.service.CloudService;
 import com.cmp.portal.common.ResponseData;
 import com.cmp.portal.common.WebUtil;
 import com.cmp.portal.user.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,7 +22,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -30,6 +34,8 @@ import static java.util.stream.Collectors.toList;
 @Controller
 @RequestMapping("")
 public class CloudController {
+
+    private static final Logger logger = LoggerFactory.getLogger(CloudController.class);
 
     @Autowired
     private CloudService cloudService;
@@ -58,6 +64,7 @@ public class CloudController {
             }
             return ResponseData.success(cloudTypes);
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }
@@ -76,6 +83,7 @@ public class CloudController {
             cloudService.updateCloudType(user, reqModCloudType);
             return ResponseData.success();
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }
@@ -101,6 +109,7 @@ public class CloudController {
             }
             return ResponseData.success(clouds);
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }
@@ -119,6 +128,7 @@ public class CloudController {
             ResponseEntity<ResCloud> response = cloudService.describeCloudAttribute(user, cloudId);
             return ResponseData.success(response.getBody());
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }
@@ -137,6 +147,7 @@ public class CloudController {
             cloudService.createCloud(user, reqCreCloud);
             return ResponseData.success();
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }
@@ -156,6 +167,7 @@ public class CloudController {
             cloudService.modifyCloudAttribute(user, reqModCloud, cloudId);
             return ResponseData.success();
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }
@@ -232,6 +244,7 @@ public class CloudController {
                 }
             }
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }
@@ -249,6 +262,7 @@ public class CloudController {
             ResponseEntity<ResCloudAdapters> response = cloudService.describeCloudAdapters(user);
             return ResponseData.success(response.getBody());
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }
@@ -267,6 +281,7 @@ public class CloudController {
             cloudService.updateCloudAdapter(user, reqModCloudAdapter);
             return ResponseData.success();
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }

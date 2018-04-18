@@ -2,6 +2,8 @@ package com.cmp.portal.instance.controller;
 
 import com.cmp.portal.common.ResponseData;
 import com.cmp.portal.common.WebUtil;
+import com.cmp.portal.instance.model.req.ReqCloseInstance;
+import com.cmp.portal.instance.model.req.ReqStartInstance;
 import com.cmp.portal.instance.model.res.ResInstances;
 import com.cmp.portal.instance.service.InstanceService;
 import com.cmp.portal.user.model.User;
@@ -52,6 +54,7 @@ public class InstanceController {
             ResponseEntity<ResInstances> response = instanceService.describeInstances(user, cloudId);
             return ResponseData.success(response.getBody());
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }
@@ -60,16 +63,32 @@ public class InstanceController {
     @ResponseBody
     public ResponseData<ResInstances> describeInstance(
             @PathVariable String instanceId, String cloudId, String regionId) {
+        return null;
+    }
+
+    @RequestMapping("/instances/close")
+    @ResponseBody
+    public ResponseData closeInstance(String cloudId, ReqCloseInstance reqCloseInstance) {
         try {
-            logger.info("start");
             User user = WebUtil.getCurrentUser();
-            ResponseEntity<ResInstances> response = instanceService.describeInstances(user, cloudId);
-            long l1 = System.currentTimeMillis();
-            logger.info("end");
-            return ResponseData.success(response.getBody());
+            instanceService.closeInstance(user, cloudId, reqCloseInstance);
+            return ResponseData.success();
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }
 
+    @RequestMapping("/instances/start")
+    @ResponseBody
+    public ResponseData startInstance(String cloudId, ReqStartInstance reqStartInstance) {
+        try {
+            User user = WebUtil.getCurrentUser();
+            instanceService.startInstance(user, cloudId, reqStartInstance);
+            return ResponseData.success();
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+            return ResponseData.failure(e.getMessage());
+        }
+    }
 }
