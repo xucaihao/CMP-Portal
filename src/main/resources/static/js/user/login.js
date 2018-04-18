@@ -7,17 +7,18 @@ $(function () {
             url: "../login",
             data: {
                 password: password,
-                account: account,
+                account: account
             },
             type: "get",
-            success: function (data, status) {
-                debugger
-                if (status === "success") {
+            success: function (data) {
+                if ('Success' === data.code) {
                     window.location.href = "../index"
+                } else {
+                    // Ewin.showMsg('error', '用户名密码错误！');
                 }
             },
             error: function () {
-                debugger
+                // Ewin.showMsg('error', '用户名密码错误！');
             }
         })
         ;

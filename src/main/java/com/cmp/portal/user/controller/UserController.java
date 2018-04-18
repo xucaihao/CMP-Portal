@@ -10,6 +10,8 @@ import com.cmp.portal.user.model.req.ReqUser;
 import com.cmp.portal.user.model.res.ResUser;
 import com.cmp.portal.user.model.res.ResUsers;
 import com.cmp.portal.user.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -33,6 +35,8 @@ import static java.util.stream.Collectors.toList;
 @Controller
 @RequestMapping("")
 public class UserController {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserService userService;
@@ -86,7 +90,8 @@ public class UserController {
      * @return 成功页面/失败页面
      */
     @RequestMapping("/login")
-    public ModelAndView login(String account, String password) {
+    @ResponseBody
+    public ResponseData login(String account, String password) {
         try {
             ReqUser user = new ReqUser();
             user.setUserName(account);
@@ -104,9 +109,10 @@ public class UserController {
                 ServletContext application = session.getServletContext();
                 application.setAttribute("onlineUserList", SessionCounter.onlineUsers);
             }
-            return new ModelAndView("index.html");
+            return ResponseData.success();
         } catch (Exception e) {
-            return new ModelAndView("error.html");
+            logger.info(e.getMessage());
+            return ResponseData.failure(e.getMessage());
         }
     }
 
@@ -139,6 +145,7 @@ public class UserController {
             userService.registerUser(user);
             return ResponseData.success();
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }
@@ -162,6 +169,7 @@ public class UserController {
             }
             return ResponseData.success();
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }
@@ -179,6 +187,7 @@ public class UserController {
             ResponseEntity<ResUsers> response = userService.describeUsers(user);
             return ResponseData.success(response.getBody());
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }
@@ -197,6 +206,7 @@ public class UserController {
             ResponseEntity<ResUser> response = userService.describeUserAttribute(user, userId);
             return ResponseData.success(response.getBody());
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }
@@ -273,6 +283,7 @@ public class UserController {
                 }
             }
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }
@@ -291,6 +302,7 @@ public class UserController {
             userService.addUserMapping(user, mapping);
             return ResponseData.success();
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }
@@ -310,6 +322,7 @@ public class UserController {
             userService.updateUserMapping(user, mapping, mappingId);
             return ResponseData.success();
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }
@@ -328,6 +341,7 @@ public class UserController {
             userService.deleteUserMappingById(user, mappingId);
             return ResponseData.success();
         } catch (Exception e) {
+            logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
         }
     }

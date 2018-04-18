@@ -75,9 +75,29 @@ $(function () {
         onCheck: function (row) {
             var selectedInstances = $("#instancesTable").bootstrapTable("getSelections");
             //循环处理判断是否存
+            if (selectedInstances.length == 1 && row.status.toLowerCase() === "running") {
+                sessionStorage.instanceId = row.instanceId;
+                sessionStorage.regionId = row.regionId;
+                sessionStorage.cloudId = row.cloudId;
+                $("#btn_open_close_Instance_span").text('关机');
+                $('#btn_open_close_Instance').attr("disabled", false);
+            }
+            if (selectedInstances.length == 1 && row.status.toLowerCase() === "stopped") {
+                sessionStorage.instanceId = row.instanceId;
+                sessionStorage.regionId = row.regionId;
+                sessionStorage.cloudId = row.cloudId;
+                $("#btn_open_close_Instance_span").text('开机');
+                $("#btn_open_close_Instance").attr("disabled", false);
+            }
         },
-        onCheckAll:function(rows){
+        onCheckAll: function (rows) {
             var selectedInstances = $("#instancesTable").bootstrapTable("getSelections");
+        },
+        onUncheck: function () {
+            var selectedInstances = $("#instancesTable").bootstrapTable("getSelections");
+            if (selectedInstances.length == 0) {
+                $('#btn_open_close_Instance').attr("disabled", true);
+            }
         }
     });
 
@@ -185,15 +205,86 @@ $(function () {
         }
     });
 
-    //登录云主机实例
+    //登录云创建主机实例
     $('#btn_addInstance').click(function () {
-        debugger
         window.location.href = '../instancesCreatePage';
     });
 
+    //开启、关闭主机
+    $('#btn_open_close_Instance').click(function () {
+        var op = $("#btn_open_close_Instance_span").text();
+        if (op === "关机") {
+            $("#closeInstanceDialog").modal('show');
+        }
+        if (op === "开机") {
+            $.ajax({
+                type: "get",
+                data: {
+                    cloudId: sessionStorage.cloudId,
+                    instanceId: sessionStorage.instanceId,
+                    regionId: sessionStorage.regionId,
+                },
+                dataType: 'json',
+                url: "../instances/start",
+                success: function (data) {
+                    if ('Success' === data.code) {
+                        setInterval(findInstances(), 1000);
+                    } else {
+                        $('.portal-loading').hide();
+                        if (data.message == null || data.message === "")
+                            Ewin.showMsg('error', '启动云主机失败！');
+                        else
+                            Ewin.showMsg('error', data.message);
+                        $(".modal-backdrop").remove();
+                    }
+                },
+                error: function () {
+                    $('.portal-loading').hide();
+                    Ewin.showMsg('error', '启动云主机失败！');
+                    $(".modal-backdrop").remove();
+                }
+            });
+        }
+    });
+
+
+    //确认关闭主机
+    $('#doCloseInstance').click(function () {
+        $("#closeInstanceDialog").hide();
+        $.ajax({
+            type: "get",
+            data: {
+                cloudId: sessionStorage.cloudId,
+                instanceId: sessionStorage.instanceId,
+                regionId: sessionStorage.regionId,
+                forceStop: sessionStorage.forceStop
+            },
+            dataType: 'json',
+            url: "../instances/close",
+            success: function (data) {
+                if ('Success' === data.code) {
+                    setInterval(findInstances(), 1000);
+                    $(".modal-backdrop").remove();
+                } else {
+                    $('.portal-loading').hide();
+                    if (data.message == null || data.message === "")
+                        Ewin.showMsg('error', '关闭云主机失败！');
+                    else
+                        Ewin.showMsg('error', data.message);
+                    $(".modal-backdrop").remove();
+                }
+            },
+            error: function () {
+                $('.portal-loading').hide();
+                Ewin.showMsg('error', '关闭云主机失败！');
+                $(".modal-backdrop").remove();
+            }
+        });
+    });
+
+
     // 表格中"状态"菜单栏数据格式化
     function stateFormatter(value, row, index) {
-        debugger
         if (row.state === true) {
             if (row.status.toLowerCase() === "running") {
                 ('#btn_closeInstance').css(hidden, 'false');
@@ -238,7 +329,6 @@ $(function () {
     // 表格中"instanceType"菜单栏数据格式化
     function instanceTypeFormatter(value, row, index) {
         var instanceType = row.instanceType;
-        debugger
         var osname = row.osname;
         var osName = row.osname.toLocaleLowerCase();
         if (osName.startsWith("windows"))
@@ -290,18 +380,18 @@ $(function () {
             + '<p id="instanceChargeType' + index + '" >' + expiredTime + '到期 </p> ';
     }
 
-    // 表格中"internetChargeType"菜单栏数据格式化
-    // function internetChargeTypeFormatter(value, row, index) {
-    //     var internetChargeType = row.internetChargeType.toLowerCase();
-    //     var chargeType = "---";
-    //     if (internetChargeType.indexOf("bandwidth") >= 0) {
-    //         chargeType = '<p id="internetChargeType' + index + '" >按带宽付费</p> ';
-    //     }
-    //     if (internetChargeType.indexOf("traffic") >= 0) {
-    //         chargeType = '<p id="internetChargeType' + index + '" >按流量付费</p> ';
-    //     }
-    //     return chargeType;
-    // }
+// 表格中"internetChargeType"菜单栏数据格式化
+// function internetChargeTypeFormatter(value, row, index) {
+//     var internetChargeType = row.internetChargeType.toLowerCase();
+//     var chargeType = "---";
+//     if (internetChargeType.indexOf("bandwidth") >= 0) {
+//         chargeType = '<p id="internetChargeType' + index + '" >按带宽付费</p> ';
+//     }
+//     if (internetChargeType.indexOf("traffic") >= 0) {
+//         chargeType = '<p id="internetChargeType' + index + '" >按流量付费</p> ';
+//     }
+//     return chargeType;
+// }
 
     function operateFormatter(value, row, index) {
         return [
@@ -323,3 +413,12 @@ window.operateEvents = {
         $("#instanceLogIn").modal('show');
     }
 };
+
+function stopInstance(type) {
+    debugger
+    if (type === 'false') {
+        sessionStorage.forceStop = false;
+    } else {
+        sessionStorage.forceStop = true;
+    }
+}

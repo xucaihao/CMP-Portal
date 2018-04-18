@@ -103,10 +103,7 @@ $(function () {
 
     // 表格中"ID/快照名"菜单栏数据格式化
     function idNameFormatter(value, row, index) {
-        sessionStorage.snapshotId = row.snapshotId;
-        sessionStorage.regionId = row.regionId;
-        sessionStorage.cloudId = row.cloudId;
-        return '<a id="snapshotId' + index + '" href="../snapshotDetailPage" style="margin: 0 auto">' + row.snapshotId + ' </a>'
+        return '<p>' + row.snapshotId + ' </p>'
             + '<p>' + row.snapshotName + '</p>';
     }
 

@@ -2,6 +2,9 @@ package com.cmp.portal.instance.service;
 
 import com.cmp.portal.common.CoreWsClient;
 import com.cmp.portal.common.ExceptionUtil;
+import com.cmp.portal.common.JsonUtil;
+import com.cmp.portal.instance.model.req.ReqCloseInstance;
+import com.cmp.portal.instance.model.req.ReqStartInstance;
 import com.cmp.portal.instance.model.res.ResInstances;
 import com.cmp.portal.user.model.User;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,46 @@ public class InstanceServiceImpl implements InstanceService {
         try {
             String url = "/instances";
             return CoreWsClient.get(user, url, cloudId, ResInstances.class);
+        } catch (Exception e) {
+            ExceptionUtil.dealThrowable(e);
+            return null;
+        }
+    }
+
+    /**
+     * 关闭主机
+     *
+     * @param user             用户
+     * @param cloudId          云id
+     * @param reqCloseInstance 请求体
+     * @return 操作结果
+     */
+    @Override
+    public ResponseEntity closeInstance(User user, String cloudId, ReqCloseInstance reqCloseInstance) {
+        try {
+            String url = "/instances/close";
+            String body = JsonUtil.objectToString(reqCloseInstance);
+            return CoreWsClient.put(user, url, body, cloudId, String.class);
+        } catch (Exception e) {
+            ExceptionUtil.dealThrowable(e);
+            return null;
+        }
+    }
+
+    /**
+     * 启动主机
+     *
+     * @param user             用户
+     * @param cloudId          云id
+     * @param reqStartInstance 请求体
+     * @return 操作结果
+     */
+    @Override
+    public ResponseEntity startInstance(User user, String cloudId, ReqStartInstance reqStartInstance) {
+        try {
+            String url = "/instances/start";
+            String body = JsonUtil.objectToString(reqStartInstance);
+            return CoreWsClient.put(user, url, body, cloudId, String.class);
         } catch (Exception e) {
             ExceptionUtil.dealThrowable(e);
             return null;

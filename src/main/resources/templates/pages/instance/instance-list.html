@@ -65,8 +65,10 @@
                             <button id="btn_addInstance" type="button" class="btn btn-primary">
                                 <span class="fa fa-plus" aria-hidden="true"></span>新建
                             </button>
-                            <button id="btn_open_close_Instance" type="button" class="btn btn-primary" style="color: #ff5221" disabled="true">
-                                <span class="fa fa-power-off" aria-hidden="true"></span>关机
+                            <button id="btn_open_close_Instance" type="button" class="btn btn-primary"
+                                    style="color: #ff5221" disabled="true">
+                                <span id="btn_open_close_Instance_span" class="fa fa-power-off"
+                                      aria-hidden="true">关机</span>
                             </button>
                         </div>
                     </div>
@@ -144,6 +146,75 @@
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
+</div>
+
+<!--云主机登录-->
+<div class="modal fade" id="closeInstanceDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    关闭云主机
+                </h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div class="pull-left col-padding"><span class="text-size-64 icon-help-2 fa fa-info-circle"
+                                                         style="color: orangered;"></span></div>
+                <div class="pull-left col-padding col-sm-10">
+                    <div class="row ng-isolate-scope" batch-action-confirm-message=""
+                         selected-item="viewModel.selectedItems" config="config" columns="columns">
+                        <div class="col-sm-12" ng-class="{'text-danger': selectedItem.length > 1}"><span
+                                class="ng-binding">您所选的</span> <span style="cursor: pointer"
+                                                                     ng-click="dropdownToggle()"><span
+                                class="text-primary text-size-16 ng-binding">1</span><span
+                                class="text-primary text-size-16 ng-binding">&nbsp;个实例</span> <span
+                                ng-class="{'icon-down': !isDropdown, 'icon-up': isDropdown}" class="icon-down"
+                                data-spm-anchor-id="5176.2020520101.0.i2.53d04df5woVHNH"></span></span> <span
+                                class="ng-binding">将执行停止操作，您是否确认操作？</span></div>
+                        <div class="col-sm-12"><!-- ngIf: isDropdown --></div>
+                    </div>
+                    <form class="form-horizontal ng-pristine ng-valid" role="form" name="form" novalidate="">
+                        <div class="form-group"><label class="col-sm-3 control-label"
+                                                       bo-text=" 'ecs.vm.act.dlg.common_action_type_name' | translate: translateData">停止方式：</label>
+                            <div class="form-group">
+                                <label class="radio-inline">
+                                    <input type="radio" value="false" name="forceStop" checked="checked"
+                                           onclick="stopInstance('false')">停止
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" value="true" name="forceStop"
+                                           onclick="stopInstance('true')">强制停止
+                                </label>
+                            </div>
+                        </div>
+                        <div id="forceStopTitle" class="form-group" aria-hidden="true">
+                            <div class="col-sm-10 col-sm-offset-2">
+                                <div class="form-control-static ng-hide" ng-show="viewModel.isForceStop">
+                                    <div class="alert alert-warning ng-binding">强制停止模式，会导致云服务器实例当前未保存的数据丢失。
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="alert alert-warning"><p bo-text="'ecs.vm.act.dlg.stop_tips' | translate">
+                        包年包月实例停止后不会改变到期时间</p>
+                        <p ng-hide="viewModel.inJST || viewModel.showKeepCharging"
+                           bo-text="'ecs.vm.act.dlg.stop_tips_after_pay' | translate" class="">
+                            按量付费实例停止后依然会收取您资源占用费用（如CPU/内存等费用）</p></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="doCloseInstance">确定
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="portal-loading">
