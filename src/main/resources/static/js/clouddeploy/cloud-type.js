@@ -45,49 +45,16 @@ $(function () {
     findCloudTypeList();
 
 
-    function findCloudTypeList() {
-        $('.portal-loading').show();
-        $.ajax({
-            type: "get",
-            data: {},
-            dataType: 'json',
-            url: "../cloudTypes",
-            success: function (data) {
-                debugger
-                if ('Success' === data.code)
-                $("#cloudTypeTable").bootstrapTable('load', data.data.cloudTypes);
-                $('.portal-loading').hide();
-            },
-            error: function () {
-                $('.portal-loading').hide();
-                Ewin.showMsg('error', '申请失败！');
-                $(".modal-backdrop").remove();
-            }
-        });
-    }
-
-    function operateFormatter(value, row, index) {
-        return [
-            '<a class="RoleOfDisable fa fa-trash-o"></a>'
-        ].join('');
-    }
 
 
-    function stateFormatter(value, row, index) {
-        if (row.state == true)
-            return {
-                disabled: true,//设置是否可用
-                checked: true//设置选中
-            };
-        return value;
-    }
+
 });
 window.operateEvents = {
     'click .RoleOfDisable': function (e, value, row, index) {
         debugger
         var msg = '启用';
         var val = true;
-        if ('1' === row.disable) {
+        if (true === row.disable) {
             msg = '禁用';
             val = false;
         }
@@ -103,7 +70,8 @@ window.operateEvents = {
                     success: function (data, status) {
                         if (status == "success") {
                             Ewin.showMsg('success', msg + '该云服务商类型成功！');
-                            $("#cloudTypeTable").bootstrapTable('refresh', {url: "../cloudTypes"});
+                            findCloudTypeList();
+                            // $('.portal-loading').hide();
                         } else {
                             Ewin.showMsg('error', msg + '该云服务商类型失败！');
                         }
@@ -153,3 +121,46 @@ window.operateEvents = {
         // $.growl.warning({title: "警告标题", message: "警告消息内容!" });
     }
 };
+
+function findCloudTypeList() {
+    $('.portal-loading').show();
+    $.ajax({
+        type: "get",
+        data: {},
+        dataType: 'json',
+        url: "../cloudTypes",
+        success: function (data) {
+            debugger
+            if ('Success' === data.code)
+                $("#cloudTypeTable").bootstrapTable('load', data.data.cloudTypes);
+            $('.portal-loading').hide();
+        },
+        error: function () {
+            $('.portal-loading').hide();
+            Ewin.showMsg('error', '查询失败！');
+            $(".modal-backdrop").remove();
+        }
+    });
+}
+
+function operateFormatter(value, row, index) {
+    if (true === row.disable) {
+        return [
+            '<a class="RoleOfDisable fa fa-cog" title="禁用" style="text-decoration: none"></a>'
+        ].join('');
+    } else {
+        return [
+            '<a class="RoleOfDisable fa fa-cog" title="启用" style="text-decoration: none"></a>'
+        ].join('');
+    }
+}
+
+
+function stateFormatter(value, row, index) {
+    if (row.state == true)
+        return {
+            disabled: true,//设置是否可用
+            checked: true//设置选中
+        };
+    return value;
+}

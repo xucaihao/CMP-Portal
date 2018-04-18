@@ -64,6 +64,7 @@ $(function () {
         $("#modifyCloudAdapterModal").modal('hide');
         $('.portal-loading').show();
         var data = {
+            "cloudType": $("#modifyCloudType").val(),
             "adapterIp": $("#modifyAdapterIp").val(),
             "adapterPort": $('#modifyAdapterPort').val()
         };
@@ -78,6 +79,8 @@ $(function () {
                 if (data.code === 'Success') {
                     Ewin.showMsg('success', '修改成功！');
                     findCloudAdapterList();
+                } else {
+                    Ewin.showMsg('error', data.des);
                 }
                 $('.portal-loading').hide();
             },
@@ -93,7 +96,7 @@ $(function () {
 
 window.operateEvents = {
     'click .RoleOfEdit': function (e, value, row, index) {
-        debugger;
+        $("#modifyCloudType").val(row.cloudType);
         $('#modifyAdapterName').val(row.adapterName);
         $('#modifyAdapterIp').val(row.adapterIp);
         $('#modifyAdapterPort').val(row.adapterPort);
