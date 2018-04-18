@@ -247,14 +247,6 @@ $(function () {
         }
     });
 
-    function stopInstance(type) {
-        debugger
-        if (type === 'false') {
-            sessionStorage.forceStop = false;
-        } else {
-            sessionStorage.forceStop = true;
-        }
-    }
 
     //确认关闭主机
     $('#doCloseInstance').click(function () {
@@ -421,3 +413,12 @@ window.operateEvents = {
         $("#instanceLogIn").modal('show');
     }
 };
+
+function stopInstance(type) {
+    debugger
+    if (type === 'false') {
+        sessionStorage.forceStop = false;
+    } else {
+        sessionStorage.forceStop = true;
+    }
+}
