@@ -1,11 +1,9 @@
 package com.cmp.portal.user.controller;
 
-import ch.qos.logback.core.pattern.util.RegularEscapeUtil;
 import com.cmp.portal.common.ResponseData;
 import com.cmp.portal.common.SessionCounter;
 import com.cmp.portal.common.WebUtil;
 import com.cmp.portal.user.model.User;
-import com.cmp.portal.user.model.UserMappingEntity;
 import com.cmp.portal.user.model.req.ReqAddMapping;
 import com.cmp.portal.user.model.req.ReqModMapping;
 import com.cmp.portal.user.model.req.ReqUser;
@@ -26,7 +24,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +71,7 @@ public class UserController {
     public ModelAndView userMappingListHtml() {
         return new ModelAndView("pages/user/user-mapping.html");
     }
+
     /**
      * 获取在线用户列表
      *
@@ -316,18 +314,15 @@ public class UserController {
 
     @RequestMapping("/userMappings")
     @ResponseBody
-    public ResponseData findUserMappings() {
-        UserMappingEntity mapping = new UserMappingEntity();
-        mapping.setAccessKey("df3434345d94sdr445df");
-        mapping.setAuthInfo("s0w4fsd458fsdw4sdfsdf34wxcer5e4f");
-        mapping.setCloudId("wrwer9xc87wew79w34jdf4534xc");
-        mapping.setCmpUserId("wr897989wr7789wer89werkwer");
-        mapping.setCmpUserName("xiaoming");
-        List<UserMappingEntity> userMappingEntities = new ArrayList<>();
-        userMappingEntities.add(mapping);
-        ResUserMappings userMappings = new ResUserMappings();
-        userMappings.setUserMappings(userMappingEntities);
-        return ResponseData.success(userMappings);
+    public ResponseData<ResUserMappings> describeUserMappings() {
+        try {
+            User user = WebUtil.getCurrentUser();
+            ResponseEntity<ResUserMappings> response = userService.describeUserMappings(user);
+            return ResponseData.success(response.getBody());
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+            return ResponseData.failure(e.getMessage());
+        }
     }
 
 

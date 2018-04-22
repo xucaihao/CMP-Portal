@@ -10,6 +10,10 @@ $(function () {
             formatter: stateFormatter
         },
         {
+            field: 'cloudName',
+            title: '云服务商'
+        },
+        {
             field: 'cmpUserName',
             title: '用户名'
         },

@@ -143,47 +143,45 @@ $(function () {
                 $('.portal-loading').hide();
             }
         });
+    });
 
-        //批量删除
-        $('#btn_deleteCloudDeploy').click(function () {
+    //批量删除
+    $('#btn_deleteCloudDeploy').click(function () {
+        debugger
+        var rows = $("#cloudDeployTable").bootstrapTable("getSelections");
+        if (rows.length === 0) {
+            Ewin.showMsg('warning', '请选中要删除的云');
+            return;
+        }
+        var ids = [];
+        for (var i = 0; i < rows.length; i++) {
+            ids.push(rows[i].cloudId);
+        }
+        Ewin.confirm({message: "确认要删除选中的云吗？数量：" + rows.length}).on(function (flag) {
             debugger
-            var rows = $("#cloudDeployTable").bootstrapTable("getSelections");
-            if (rows.length === 0) {
-                Ewin.showMsg('warning', '请选中要删除的云');
-                return;
-            }
-
-            var ids = [];
-            for (var i = 0; i < rows.length; i++) {
-                ids.push(rows[i].id);
-            }
-
-            Ewin.confirm({message: "确认要删除选中的云吗？数量：" + rows.length}).on(function (flag) {
-                if (flag === true) {
-                    $('.portal-loading').show();
-                    $.ajax({
-                        type: "get",
-                        async: true,
-                        traditional: false,
-                        data: {cloudIds: ids},
-                        url: "../clouds/delete",
-                        success: function (data, status) {
-                            debugger
-                            if (status == "success") {
-                                Ewin.showMsg('success', '删除成功！');
-                                findCloudDeployList();
-                            } else {
-                                Ewin.showMsg('error', '删除云失败！');
-                            }
-                            $('.portal-loading').hide();
-                        },
-                        error: function () {
-                            $('.portal-loading').hide();
+            if (flag === true) {
+                $('.portal-loading').show();
+                $.ajax({
+                    type: "get",
+                    async: true,
+                    traditional: false,
+                    data: {cloudIds: ids},
+                    url: "../clouds/delete",
+                    success: function (data, status) {
+                        if (data.code == "Success") {
+                            Ewin.showMsg('success', '删除成功！');
+                            findCloudDeployList();
+                        } else {
                             Ewin.showMsg('error', '删除云失败！');
                         }
-                    });
-                }
-            });
+                        $('.portal-loading').hide();
+                    },
+                    error: function () {
+                        $('.portal-loading').hide();
+                        Ewin.showMsg('error', '删除云失败！');
+                    }
+                });
+            }
         });
     });
 });

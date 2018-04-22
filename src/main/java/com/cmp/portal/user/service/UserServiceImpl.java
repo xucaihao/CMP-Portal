@@ -8,6 +8,7 @@ import com.cmp.portal.user.model.req.ReqAddMapping;
 import com.cmp.portal.user.model.req.ReqModMapping;
 import com.cmp.portal.user.model.req.ReqUser;
 import com.cmp.portal.user.model.res.ResUser;
+import com.cmp.portal.user.model.res.ResUserMappings;
 import com.cmp.portal.user.model.res.ResUsers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -124,6 +125,23 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 查询用户映射列表
+     *
+     * @param user 用户
+     * @return 用户映射列表
+     */
+    @Override
+    public ResponseEntity<ResUserMappings> describeUserMappings(User user) {
+        try {
+            String url = "/users/mappings";
+            return CoreWsClient.get(user, url, null, ResUserMappings.class);
+        } catch (Exception e) {
+            ExceptionUtil.dealThrowable(e);
+            return null;
+        }
+    }
+
+    /**
      * 添加用户映射关系
      *
      * @param user    用户
@@ -133,7 +151,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity addUserMapping(User user, ReqAddMapping mapping) {
         try {
-            String url = "users/mappings";
+            String url = "/users/mappings";
             String body = JsonUtil.objectToString(mapping);
             return CoreWsClient.post(user, url, body, null, String.class);
         } catch (Exception e) {
@@ -153,7 +171,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity updateUserMapping(User user, ReqModMapping mapping, String mappingId) {
         try {
-            String url = "users/mappings/" + mappingId;
+            String url = "/users/mappings/" + mappingId;
             String body = JsonUtil.objectToString(mapping);
             return CoreWsClient.put(user, url, body, null, String.class);
         } catch (Exception e) {

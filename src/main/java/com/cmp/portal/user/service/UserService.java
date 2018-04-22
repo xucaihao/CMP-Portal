@@ -5,6 +5,7 @@ import com.cmp.portal.user.model.req.ReqAddMapping;
 import com.cmp.portal.user.model.req.ReqModMapping;
 import com.cmp.portal.user.model.req.ReqUser;
 import com.cmp.portal.user.model.res.ResUser;
+import com.cmp.portal.user.model.res.ResUserMappings;
 import com.cmp.portal.user.model.res.ResUsers;
 import org.springframework.http.ResponseEntity;
 
@@ -60,6 +61,14 @@ public interface UserService {
      * @return 操作结果
      */
     ResponseEntity deleteUser(User user, String userId);
+
+    /**
+     * 查询用户映射列表
+     *
+     * @param user 用户
+     * @return 用户映射列表
+     */
+    ResponseEntity<ResUserMappings> describeUserMappings(User user);
 
     /**
      * 添加用户映射关系
