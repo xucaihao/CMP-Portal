@@ -17,6 +17,8 @@ public class UserMappingEntity {
 
     private String cloudId;
 
+    private String cloudName;
+
     /**
      * 存储用户底层云用户信息（accessKey，secret）
      */
@@ -60,6 +62,14 @@ public class UserMappingEntity {
 
     public void setCloudId(String cloudId) {
         this.cloudId = cloudId;
+    }
+
+    public String getCloudName() {
+        return cloudName;
+    }
+
+    public void setCloudName(String cloudName) {
+        this.cloudName = cloudName;
     }
 
     public String getAuthInfo() {

@@ -216,24 +216,6 @@ public class UserController {
         }
     }
 
-//    /**
-//     * 删除用户
-//     *
-//     * @param userId 用户id
-//     * @return 操作结果
-//     */
-//    @RequestMapping("/users/{userId}/delete")
-//    @ResponseBody
-//    public ResponseData deleteUser(@PathVariable String userId) {
-//        try {
-//            User user = WebUtil.getCurrentUser();
-//            userService.deleteUser(user, userId);
-//            return ResponseData.success();
-//        } catch (Exception e) {
-//            return ResponseData.failure(e.getMessage());
-//        }
-//    }
-
     /**
      * 批量删除用户
      *
