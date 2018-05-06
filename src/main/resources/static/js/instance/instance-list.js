@@ -172,7 +172,7 @@ $(function () {
                 data: {
                     cloudId: sessionStorage.cloudId,
                     instanceId: sessionStorage.instanceId,
-                    regionId: sessionStorage.regionId,
+                    regionId: sessionStorage.regionId
                 },
                 dataType: 'json',
                 url: "../instances/start",

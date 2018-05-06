@@ -10,7 +10,8 @@ $(function () {
         },
         {
             field: 'userName',
-            title: '用户名'
+            title: '用户名',
+            formatter: userNameFormatter
         },
         {
             field: 'roleName',
@@ -127,12 +128,19 @@ $(function () {
     });
 
     function stateFormatter(value, row, index) {
-        if (row.state == true)
+        if (row.state === true)
             return {
                 disabled: true,//设置是否可用
                 checked: true//设置选中
             };
         return value;
+    }
+
+    function userNameFormatter(value, row, index) {
+        if (row.online === true)
+            return '<p id="userName' + index + '" style="color: #0C9C14;">' + row.userName + '</p>';
+        else
+            return '<p id="userName' + index + '" style="color: #ff6600;">' + row.userName + '</p>';
     }
 
     $("#addUserModal").on("hidden.bs.modal", function() {

@@ -77,14 +77,11 @@ public class UserController {
      *
      * @return 在线用户列表
      */
-    @RequestMapping("/onlineUser")
-    @ResponseBody
     @SuppressWarnings("unchecked")
-    public ResponseData<ResUsers> describeOnlineUser() {
+    private List<User> describeOnlineUser() {
         HttpSession session = WebUtil.session();
         ServletContext application = session.getServletContext();
-        List<User> onlineUserList = (List<User>) application.getAttribute("onlineUserList");
-        return ResponseData.success(new ResUsers(onlineUserList));
+        return (List<User>) application.getAttribute("onlineUserList");
     }
 
     /**
@@ -189,8 +186,15 @@ public class UserController {
     public ResponseData<ResUsers> describeUsers() {
         try {
             User user = WebUtil.getCurrentUser();
-            ResponseEntity<ResUsers> response = userService.describeUsers(user);
-            return ResponseData.success(response.getBody());
+            List<User> users = userService.describeUsers(user)
+                    .getBody()
+                    .getUsers();
+            List<User> onlineUser = describeOnlineUser();
+            users.forEach(u -> {
+                if (onlineUser.stream().anyMatch(vo -> vo.getUserId().equals(u.getUserId())))
+                    u.setOnline(true);
+            });
+            return ResponseData.success(new ResUsers(users));
         } catch (Exception e) {
             logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
