@@ -62,7 +62,7 @@ $(function () {
         }
     ];
     $("#instancesTable").bootstrapTable({
-        showRefresh: true,                  //是否显示刷新按钮
+        showRefresh: false,                  //是否显示刷新按钮
         showPaginationSwitch: true,       //是否显示选择分页数按钮
         columns: columns,
         pagination: true,//是否开启分页（*）
@@ -75,19 +75,23 @@ $(function () {
         onCheck: function (row) {
             var selectedInstances = $("#instancesTable").bootstrapTable("getSelections");
             //循环处理判断是否存
-            if (selectedInstances.length == 1 && row.status.toLowerCase() === "running") {
+            if (selectedInstances.length === 1 && row.status.toLowerCase() === "running") {
                 sessionStorage.instanceId = row.instanceId;
                 sessionStorage.regionId = row.regionId;
                 sessionStorage.cloudId = row.cloudId;
                 $("#btn_open_close_Instance_span").text('关机');
                 $('#btn_open_close_Instance').attr("disabled", false);
+                $('#instanceStart').attr("disabled", true);
             }
-            if (selectedInstances.length == 1 && row.status.toLowerCase() === "stopped") {
+            if (selectedInstances.length === 1 && row.status.toLowerCase() === "stopped") {
                 sessionStorage.instanceId = row.instanceId;
                 sessionStorage.regionId = row.regionId;
                 sessionStorage.cloudId = row.cloudId;
                 $("#btn_open_close_Instance_span").text('开机');
                 $("#btn_open_close_Instance").attr("disabled", false);
+                $("#instanceClose").attr("disabled", true);
+                $("#instanceReStart").attr("disabled", true);
+
             }
         },
         onCheckAll: function (rows) {
@@ -95,7 +99,7 @@ $(function () {
         },
         onUncheck: function () {
             var selectedInstances = $("#instancesTable").bootstrapTable("getSelections");
-            if (selectedInstances.length == 0) {
+            if (selectedInstances.length === 0) {
                 $('#btn_open_close_Instance').attr("disabled", true);
             }
         }
@@ -105,58 +109,6 @@ $(function () {
     findInstances();
 
     function findInstances() {
-        // var instances = [{
-        //     instanceId: "111",
-        //     cloudId: "cloudId",
-        //     instanceName: "2222",
-        //     status: "RUNNING",
-        //     instanceType: "instanceType",
-        //     osName: "osName",
-        //     memory: 2048,
-        //     cpu: 1
-        // },
-        //     {
-        //         instanceId: "111",
-        //         cloudId: "cloudId",
-        //         instanceName: "2222",
-        //         status: "rebooting",
-        //         instanceType: "instanceType",
-        //         osName: "osName",
-        //         memory: 2048,
-        //         cpu: 1
-        //     },
-        //     {
-        //         instanceId: "111",
-        //         cloudId: "cloudId",
-        //         instanceName: "2222",
-        //         status: "Starting",
-        //         instanceType: "instanceType",
-        //         osName: "osName",
-        //         memory: 2048,
-        //         cpu: 1
-        //     },
-        //     {
-        //         instanceId: "111",
-        //         cloudId: "cloudId",
-        //         instanceName: "2222",
-        //         status: "pending",
-        //         instanceType: "instanceType",
-        //         osName: "osName",
-        //         memory: 2048,
-        //         cpu: 1
-        //     },
-        //     {
-        //         instanceId: "111",
-        //         cloudId: "cloudId",
-        //         instanceName: "2222",
-        //         status: "stopping",
-        //         instanceType: "instanceType",
-        //         osName: "osName",
-        //         memory: 2048,
-        //         cpu: 1
-        //     }
-        // ];
-        // $("#instancesTable").bootstrapTable('load', instances);
         $('.portal-loading').show();
         $.ajax({
             type: "get",
@@ -167,13 +119,6 @@ $(function () {
                 if ('Success' === data.code) {
                     $('.portal-loading').hide();
                     $("#instancesTable").bootstrapTable('load', data.data.instances);
-                    for (var i = 0; i < data.data.instances.length; i++) {
-                        var status = "#status" + i;
-                        $(status).css({
-                            "position": "relative",
-                            "left": ($(status).parent().width() - $(status).width()) / 2 + "px"
-                        });
-                    }
                 } else {
                     $('.portal-loading').hide();
                     if (data.message == null || data.message === "")
@@ -190,6 +135,11 @@ $(function () {
             }
         });
     }
+
+    //刷新主机列表
+    $('#btn_refreshInstances').click(function () {
+        findInstances();
+    });
 
     //登录主机实例
     $('#openInstanceConsole').click(function () {
@@ -394,12 +344,23 @@ $(function () {
 // }
 
     function operateFormatter(value, row, index) {
+        // var op = [];
+        // op.push('<li><a id="instanceReStart" href = "#">重启</a></li>');
+        // op.push('<li><a id="instanceStart" href = "#">开机</a></li>');
+        // op.push('<li><a id="instanceClose" href = "#">关机</a></li>');
+        // op.push('<li><a id="instanceDelete" href = "#">销毁</a></li>');
         return [
             row.status.toLowerCase() !== "running" ?
                 ('<a class="InstanceLogInBlack fa fa-tv" title="请确认云主机处于运行状态" style="color: #5E5E5E"></a>&nbsp;&nbsp;&nbsp;')
                 : ('<a class="InstanceLogInBule fa fa-tv" title="登录" style="color: #0e9aef;"></a>&nbsp;&nbsp;&nbsp;'),
             '<a class="InstanceFee  fa fa-paypal" title="续费" style="color: #0e9aef;"></a>&nbsp;&nbsp;&nbsp;',
-            '<a class="InstanceMore fa fa-list" title="更多操作" style="color: #0e9aef;"></a>'
+            '<a class="dropdown fa fa-list" data-toggle="dropdown" href="#" title="更多操作" style="color: #0e9aef"></a>' +
+            '<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">' +
+            '<li><a id="instanceReStart" href = "#">重启</a></li>' +
+            '<li><a id="instanceStart" href = "#">开机</a></li>' +
+            '<li><a id="instanceClose" href = "#">关机</a></li>' +
+            '<li><a id="instanceDelete" href = "#">销毁</a></li>' +
+            '</ul>'
         ].join('');
     }
 

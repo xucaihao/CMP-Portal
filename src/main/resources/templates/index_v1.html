@@ -24,6 +24,56 @@
 <div class="wrapper wrapper-content">
     <div class="row">
         <div class="col-sm-10">
+            <div class="console-title home-summary-vm clearfix" style="padding-top: 0" data-spm="101">
+                <h3 bo-text="'ecs.home.region.lb.home_summary'|translate">综述</h3>
+                <div class="vm_detail clearfix" ng-hide="throttleRetryLater">
+                    <div class="summary-section col-sm-6">
+                        <div class="summary-section-title" bo-text="'ecs.cons.cons.var.instance'|translate"
+                             data-spm-anchor-id="5176.2020520101.101.i0.65834df5NGDYSQ">实例
+                        </div>
+                        <div class="summary-section-content clearfix">
+                            <div class="home-text-junior col-sm-3 text-center border-right"><span
+                                    bo-text="'ecs.cons.cons.var.total'|translate">总数量</span><br><span
+                                    class="item-num home-text-senior text-primary ng-binding">1</span></div>
+                            <div class="home-text-junior col-sm-3 text-center border-right"><span
+                                    bo-text="'ecs.home.region.lb.vm_running'|translate">运行中</span><br><span
+                                    class="item-num home-text-senior text-success ng-binding">1</span></div>
+                            <div class="home-text-junior col-sm-3 text-center border-right"><a target="_blank"
+                                                                                               ecs-home-renew-link=""
+                                                                                               href="https://renew.console.aliyun.com/#/ecs?action=renew/EcsAction&amp;event_submit_do_periodList=search&amp;period=fifteen_day&amp;region=all"><span
+                                    bo-text="'ecs.home.region.lb.vm_to_expire'|translate">即将过期</span><br><span
+                                    class="item-num home-text-senior text-danger ng-binding">0</span></a></div>
+                            <div class="home-text-junior col-sm-3 text-center"><a target="_blank" ecs-home-renew-link=""
+                                                                                  href="https://renew.console.aliyun.com/#/ecs?action=renew/EcsAction&amp;event_submit_do_periodList=search&amp;period=fifteen_day&amp;region=all"><span
+                                    bo-text="'ecs.cons.conssimple.var.vm_status_expired'|translate">已过期</span><br><span
+                                    class="item-num home-text-senior text-danger ng-binding">0</span></a></div>
+                        </div>
+                    </div>
+                    <div class="summary-section col-sm-6" style="width: 48%;margin-left: 2%">
+                        <div class="summary-section-title ng-binding">快照 <span ng-show="snapshotBusinessIndebt"
+                                                                               class="text-danger ng-hide"
+                                                                               bo-text="'ecs.sp.business.lb.business_status_indebt'|translate">(服务状态：欠费)</span>
+                        </div>
+                        <div class="summary-section-content clearfix">
+                            <div class="home-text-junior col-sm-7 text-center border-right"><span
+                                    bo-text="'ecs.cons.cons.var.all_sp_package'|translate">快照容量</span><br><span
+                                    class="item-num home-text-senior text-primary" aliyun-truncate-text=""
+                                    source-text="5.69" copy-text="true" ecs-text-truncate-length-manager=""
+                                    text-length="7">5.69</span> <span class="text-explode text-size-24">GB</span></div>
+                            <div class="home-text-junior col-sm-5 text-center"><span
+                                    bo-text="'ecs.cons.cons.var.total'|translate">总数量</span><br><span
+                                    class="item-num home-text-senior text-primary" aliyun-truncate-text=""
+                                    source-text="1" copy-text="true" ecs-text-truncate-length-manager=""
+                                    text-length="5">1</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="vm_detail clearfix ng-hide" ng-show="throttleRetryLater">
+                    <div class="summary-section col-sm-12"><span class="vm_detail_message home-text-junior"
+                                                                 bo-html=" 'ecs.home.list.lb.throttleRetryLater'|translate ">正在努力计算中...请前往<a
+                            href="#/server/region/">实例列表</a>进一步执行操作或稍后再试。</span></div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-sm-4">
                     <div class="row row-sm text-center">

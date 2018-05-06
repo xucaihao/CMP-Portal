@@ -5,6 +5,7 @@ import com.cmp.portal.common.ExceptionUtil;
 import com.cmp.portal.common.JsonUtil;
 import com.cmp.portal.instance.model.req.ReqCloseInstance;
 import com.cmp.portal.instance.model.req.ReqStartInstance;
+import com.cmp.portal.instance.model.res.ResInstance;
 import com.cmp.portal.instance.model.res.ResInstances;
 import com.cmp.portal.user.model.User;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,27 @@ public class InstanceServiceImpl implements InstanceService {
         try {
             String url = "/instances";
             return CoreWsClient.get(user, url, cloudId, ResInstances.class);
+        } catch (Exception e) {
+            ExceptionUtil.dealThrowable(e);
+            return null;
+        }
+    }
+
+    /**
+     * 查询指定主机
+     *
+     * @param user       用户
+     * @param cloudId    云id
+     * @param regionId   区域id
+     * @param instanceId 实例id
+     * @return 指定主机
+     */
+    @Override
+    public ResponseEntity<ResInstance> describeInstanceAttribute(
+            User user, String cloudId, String regionId, String instanceId) {
+        try {
+            String url = "/" + regionId + "/instances/" + instanceId;
+            return CoreWsClient.get(user, url, cloudId, ResInstance.class);
         } catch (Exception e) {
             ExceptionUtil.dealThrowable(e);
             return null;

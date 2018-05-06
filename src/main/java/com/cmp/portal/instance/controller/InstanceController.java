@@ -4,6 +4,7 @@ import com.cmp.portal.common.ResponseData;
 import com.cmp.portal.common.WebUtil;
 import com.cmp.portal.instance.model.req.ReqCloseInstance;
 import com.cmp.portal.instance.model.req.ReqStartInstance;
+import com.cmp.portal.instance.model.res.ResInstance;
 import com.cmp.portal.instance.model.res.ResInstances;
 import com.cmp.portal.instance.service.InstanceService;
 import com.cmp.portal.user.model.User;
@@ -61,9 +62,17 @@ public class InstanceController {
 
     @RequestMapping("/instances/{instanceId}")
     @ResponseBody
-    public ResponseData<ResInstances> describeInstance(
+    public ResponseData<ResInstance> describeInstance(
             @PathVariable String instanceId, String cloudId, String regionId) {
-        return null;
+        try {
+            User user = WebUtil.getCurrentUser();
+            ResponseEntity<ResInstance> response =
+                    instanceService.describeInstanceAttribute(user, cloudId, regionId, instanceId);
+            return ResponseData.success(response.getBody());
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+            return ResponseData.failure(e.getMessage());
+        }
     }
 
     @RequestMapping("/instances/close")
