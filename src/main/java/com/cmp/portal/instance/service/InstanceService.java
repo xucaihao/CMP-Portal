@@ -1,6 +1,8 @@
 package com.cmp.portal.instance.service;
 
 import com.cmp.portal.instance.model.req.ReqCloseInstance;
+import com.cmp.portal.instance.model.req.ReqModifyInstance;
+import com.cmp.portal.instance.model.req.ReqRebootInstance;
 import com.cmp.portal.instance.model.req.ReqStartInstance;
 import com.cmp.portal.instance.model.res.ResInstance;
 import com.cmp.portal.instance.model.res.ResInstances;
@@ -49,4 +51,35 @@ public interface InstanceService {
      * @return 操作结果
      */
     ResponseEntity startInstance(User user, String cloudId, ReqStartInstance reqStartInstance);
+
+    /**
+     * 重启主机
+     *
+     * @param user              用户
+     * @param cloudId           云id
+     * @param reqRebootInstance 请求体
+     * @return 操作结果
+     */
+    ResponseEntity rebootInstance(User user, String cloudId, ReqRebootInstance reqRebootInstance);
+
+    /**
+     * 修改主机名称
+     *
+     * @param user              用户
+     * @param cloudId           云id
+     * @param reqModifyInstance 请求体
+     * @return 操作结果
+     */
+    ResponseEntity modifyInstanceName(User user, String cloudId, ReqModifyInstance reqModifyInstance);
+
+    /**
+     * 重置主机密码
+     *
+     * @param user              用户
+     * @param cloudId           云id
+     * @param reqModifyInstance 请求体
+     * @return 操作结果
+     */
+    ResponseEntity resetInstancesPassword(User user, String cloudId, ReqModifyInstance reqModifyInstance);
+
 }

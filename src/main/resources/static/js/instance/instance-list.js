@@ -15,6 +15,7 @@ $(function () {
         {
             field: 'instanceId',
             title: 'ID/云主机名',
+            events: operateEvents,
             formatter: idNameFormatter
         },
         {
@@ -73,25 +74,25 @@ $(function () {
         search: true,
         toolbar: "#instancesToolbar",
         onCheck: function (row) {
+            sessionStorage.instanceId = row.instanceId;
+            sessionStorage.regionId = row.regionId;
+            sessionStorage.cloudId = row.cloudId;
+            sessionStorage.instanceStatus = row.status.toLowerCase();
             var selectedInstances = $("#instancesTable").bootstrapTable("getSelections");
             //循环处理判断是否存
             if (selectedInstances.length === 1 && row.status.toLowerCase() === "running") {
-                sessionStorage.instanceId = row.instanceId;
-                sessionStorage.regionId = row.regionId;
-                sessionStorage.cloudId = row.cloudId;
                 $("#btn_open_close_Instance_span").text('关机');
                 $('#btn_open_close_Instance').attr("disabled", false);
-                $('#instanceStart').attr("disabled", true);
+                $('#btn_reboot_Instance').attr("disabled", false);
+                $('#btn_reset_Instance_password').attr("disabled", false);
+                // $('#instanceStart').attr("disabled", true);
             }
             if (selectedInstances.length === 1 && row.status.toLowerCase() === "stopped") {
-                sessionStorage.instanceId = row.instanceId;
-                sessionStorage.regionId = row.regionId;
-                sessionStorage.cloudId = row.cloudId;
                 $("#btn_open_close_Instance_span").text('开机');
                 $("#btn_open_close_Instance").attr("disabled", false);
-                $("#instanceClose").attr("disabled", true);
-                $("#instanceReStart").attr("disabled", true);
-
+                $('#btn_reset_Instance_password').attr("disabled", false);
+                // $("#instanceClose").attr("disabled", true);
+                // $("#instanceReStart").attr("disabled", true);
             }
         },
         onCheckAll: function (rows) {
@@ -101,6 +102,8 @@ $(function () {
             var selectedInstances = $("#instancesTable").bootstrapTable("getSelections");
             if (selectedInstances.length === 0) {
                 $('#btn_open_close_Instance').attr("disabled", true);
+                $('#btn_reboot_Instance').attr("disabled", true);
+                $('#btn_reset_Instance_password').attr("disabled", true);
             }
         }
     });
@@ -121,10 +124,10 @@ $(function () {
                     $("#instancesTable").bootstrapTable('load', data.data.instances);
                 } else {
                     $('.portal-loading').hide();
-                    if (data.message == null || data.message === "")
+                    if (data.msg == null || data.msg === "")
                         Ewin.showMsg('error', '查询主机列表失败！');
                     else
-                        Ewin.showMsg('error', data.message);
+                        Ewin.showMsg('error', data.msg);
                     $(".modal-backdrop").remove();
                 }
             },
@@ -181,10 +184,10 @@ $(function () {
                         setInterval(findInstances(), 1000);
                     } else {
                         $('.portal-loading').hide();
-                        if (data.message == null || data.message === "")
+                        if (data.msg == null || data.msg === "")
                             Ewin.showMsg('error', '启动云主机失败！');
                         else
-                            Ewin.showMsg('error', data.message);
+                            Ewin.showMsg('error', data.msg);
                         $(".modal-backdrop").remove();
                     }
                 },
@@ -196,7 +199,6 @@ $(function () {
             });
         }
     });
-
 
     //确认关闭主机
     $('#doCloseInstance').click(function () {
@@ -217,10 +219,10 @@ $(function () {
                     $(".modal-backdrop").remove();
                 } else {
                     $('.portal-loading').hide();
-                    if (data.message == null || data.message === "")
+                    if (data.msg == null || data.msg === "")
                         Ewin.showMsg('error', '关闭云主机失败！');
                     else
-                        Ewin.showMsg('error', data.message);
+                        Ewin.showMsg('error', data.msg);
                     $(".modal-backdrop").remove();
                 }
             },
@@ -232,6 +234,131 @@ $(function () {
         });
     });
 
+    //重启主机
+    $('#btn_reboot_Instance').click(function () {
+        $("#rebootInstanceDialog").modal('show');
+    });
+
+    //确认重启主机
+    $('#doRebootInstance').click(function () {
+        $("#rebootInstanceDialog").hide();
+        $.ajax({
+            type: "get",
+            data: {
+                cloudId: sessionStorage.cloudId,
+                instanceId: sessionStorage.instanceId,
+                regionId: sessionStorage.regionId,
+                forceReboot: sessionStorage.forceReboot
+            },
+            dataType: 'json',
+            url: "../instances/reboot",
+            success: function (data) {
+                if ('Success' === data.code) {
+                    setInterval(findInstances(), 1000);
+                    $(".modal-backdrop").remove();
+                } else {
+                    $('.portal-loading').hide();
+                    if (data.msg == null || data.msg === "")
+                        Ewin.showMsg('error', '重启云主机失败！');
+                    else
+                        Ewin.showMsg('error', data.msg);
+                    $(".modal-backdrop").remove();
+                }
+            },
+            error: function () {
+                $('.portal-loading').hide();
+                Ewin.showMsg('error', '重启云主机失败！');
+                $(".modal-backdrop").remove();
+            }
+        });
+    });
+
+    //确认修改主机名称
+    $('#btn_modifyInstanceName').click(function () {
+        $("#modifyInstanceNameDialog").modal('hide');
+        $('.portal-loading').show();
+        var data = {
+            cloudId: sessionStorage.cloudId,
+            regionId: sessionStorage.regionId,
+            instanceId: sessionStorage.instanceId,
+            instanceName: $('#modifyInstanceName').val()
+        };
+        $.ajax({
+            type: "get",
+            async: true,
+            data: data,
+            url: "../instances/modifyName",
+            success: function (data, status) {
+                debugger
+                if (data.code === 'Success') {
+                    Ewin.showMsg('success', '修改成功！');
+                    findInstances();
+                } else {
+                    Ewin.showMsg('error', data.msg);
+                }
+                $('.portal-loading').hide();
+            },
+            error: function () {
+                Ewin.showMsg('error', '修改失败！');
+                $('.portal-loading').hide();
+            }
+        });
+    });
+
+    //修改主机密码
+    $('#btn_reset_Instance_password').click(function () {
+        var status = sessionStorage.instanceStatus;
+        sessionStorage.forceStop = false;
+        if (status === "running")
+            $("#resetInstancePasswordDialog1").modal('show');
+        if (status === "stopped")
+            $("#resetInstancePasswordDialog2").modal('show');
+    });
+
+    //确认强制关机修改主机密码
+    $('#doForceReset').click(function () {
+        sessionStorage.forceStop = true;
+        $("#resetInstancePasswordDialog2").modal('show');
+        $("#resetInstancePasswordDialog1").modal('hide');
+    });
+
+    //确认修改主机密码
+    $('#doResetInstancePassword').click(function () {
+        var password1 = $('#password1').val();
+        var password2 = $('#password2').val();
+        if (password2 !== password1) {
+            $("#passwordRepeatWrong").removeAttr("hidden");
+        } else {
+            $('.portal-loading').show();
+            $("#resetInstancePasswordDialog2").modal('hide');
+            var data = {
+                cloudId: sessionStorage.cloudId,
+                regionId: sessionStorage.regionId,
+                instanceId: sessionStorage.instanceId,
+                password: password2,
+                forceStop: sessionStorage.forceStop
+            };
+            $.ajax({
+                type: "get",
+                async: true,
+                data: data,
+                url: "../instances/resetPassword",
+                success: function (data, status) {
+                    if (data.code === 'Success') {
+                        Ewin.showMsg('success', '修改成功！');
+                        findInstances();
+                    } else {
+                        Ewin.showMsg('error', data.msg);
+                    }
+                    $('.portal-loading').hide();
+                },
+                error: function () {
+                    Ewin.showMsg('error', '修改失败！');
+                    $('.portal-loading').hide();
+                }
+            });
+        }
+    });
 
     // 表格中"状态"菜单栏数据格式化
     function stateFormatter(value, row, index) {
@@ -257,8 +384,9 @@ $(function () {
         sessionStorage.instanceId = row.instanceId;
         sessionStorage.regionId = row.regionId;
         sessionStorage.cloudId = row.cloudId;
-        return '<a id="instanceId' + index + '" href="../instanceDetailPage" style="margin: 0 auto">' + row.instanceId + ' </a>'
-            + '<p>' + row.instanceName + '</p>';
+        return '<a id="instanceId' + index + '" href="../instanceDetailPage" style="margin: 0 auto">' + row.instanceId + ' </a><br/>'
+            + row.instanceName + '&nbsp;&nbsp;' +
+            '<a class="modifyInstanceName fa fa-edit" style="color: #2A2E36"></a>';
     }
 
     // 表格中"status"菜单栏数据格式化
@@ -367,19 +495,28 @@ $(function () {
 
 });
 window.operateEvents = {
+    //修改主机名称
+    'click .modifyInstanceName': function (e, value, row, index) {
+        sessionStorage.cloudId = row.cloudId;
+        sessionStorage.regionId = row.regionId;
+        sessionStorage.instanceId = row.instanceId;
+        $('#modifyInstanceName').val(row.instanceName);
+        $("#modifyInstanceNameDialog").modal('show');
+    },
+    //登录云主机
     'click .InstanceLogInBule': function (e, value, row, index) {
         sessionStorage.cloudType = row.cloudType;
         sessionStorage.regionId = row.regionId;
         sessionStorage.instanceId = row.instanceId;
         $("#instanceLogIn").modal('show');
     }
+
 };
 
 function stopInstance(type) {
-    debugger
-    if (type === 'false') {
-        sessionStorage.forceStop = false;
-    } else {
-        sessionStorage.forceStop = true;
-    }
+    sessionStorage.forceStop = type !== 'false';
+}
+
+function rebootInstance(type) {
+    sessionStorage.forceReboot = type !== 'false';
 }

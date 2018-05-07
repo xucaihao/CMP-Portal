@@ -73,6 +73,16 @@
                                 <span id="btn_open_close_Instance_span" class="fa fa-power-off"
                                       aria-hidden="true">关机</span>
                             </button>
+                            <button id="btn_reboot_Instance" type="button" class="btn btn-primary"
+                                    style="color: #ff5221" disabled="true">
+                                <span id="btn_reboot_Instance_span" class="fa fa-repeat"
+                                      aria-hidden="true">重启</span>
+                            </button>
+                            <button id="btn_reset_Instance_password" type="button" class="btn btn-primary"
+                                    style="color: #ff5221" disabled="true">
+                                <span id="btn_reset_Instance_password_span" class="fa fa-key"
+                                      aria-hidden="true">重置密码</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -151,7 +161,7 @@
     </div><!-- /.modal -->
 </div>
 
-<!--云主机登录-->
+<!--关闭云主机-->
 <div class="modal fade" id="closeInstanceDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
      aria-hidden="true">
     <div class="modal-dialog">
@@ -212,6 +222,213 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" id="doCloseInstance">确定
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--重启云主机-->
+<div class="modal fade" id="rebootInstanceDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    重启云主机
+                </h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div class="pull-left col-padding"><span class="text-size-64 icon-help-2 fa fa-question-circle-o"
+                                                         style="color: #eea236;"></span></div>
+                <div class="pull-left col-padding col-sm-10">
+                    <div class="row ng-isolate-scope" batch-action-confirm-message=""
+                         selected-item="viewModel.selectedItems" config="config" columns="columns">
+                        <div class="col-sm-12" ng-class="{'text-danger': selectedItem.length > 1}"><span
+                                class="ng-binding">您所选的</span> <span style="cursor: pointer"
+                                                                     ng-click="dropdownToggle()"><span
+                                class="text-primary text-size-16 ng-binding">1</span><span
+                                class="text-primary text-size-16 ng-binding">&nbsp;个实例</span> <span
+                                ng-class="{'icon-down': !isDropdown, 'icon-up': isDropdown}" class="icon-down"
+                                data-spm-anchor-id="5176.2020520101.0.i2.53d04df5woVHNH"></span></span> <span
+                                class="ng-binding"> 将执行重启操作，您是否确认操作？</span></div>
+                        <div class="col-sm-12"><!-- ngIf: isDropdown --></div>
+                    </div>
+                    <form class="form-horizontal ng-pristine ng-valid" role="form" name="form" novalidate="">
+                        <div class="form-group"><label class="col-sm-3 control-label"
+                                                       bo-text=" 'ecs.vm.act.dlg.common_action_type_name' | translate: translateData">停止方式：</label>
+                            <div class="form-group">
+                                <label class="radio-inline">
+                                    <input type="radio" value="false" name="forceReboot" checked="checked"
+                                           onclick="rebootInstance('false')">重启
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" value="true" name="forceReboot"
+                                           onclick="rebootInstance('true')">强制重启
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="alert alert-warning"><p bo-text="'ecs.vm.act.dlg.stop_tips' | translate">
+                        包年包月实例停止后不会改变到期时间</p>
+                        <p ng-hide="viewModel.inJST || viewModel.showKeepCharging"
+                           bo-text="'ecs.vm.act.dlg.stop_tips_after_pay' | translate" class="">
+                            按量付费实例停止后依然会收取您资源占用费用（如CPU/内存等费用）</p></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="doRebootInstance">确定
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--修改云主机名称-->
+<div class="modal fade" id="modifyInstanceNameDialog" tabindex="-1" role="dialog" aria-labelledby="addCloudAdapter"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title fa fa-edit" style="font-size: 20px">
+                    修改云主机名称
+                </h4>
+            </div>
+            <form class="form-horizontal" role="form">
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">云主机新名称:</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control " id="modifyInstanceName" placeholder="请输入名称">
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                </button>
+                <button type="button" id="btn_modifyInstanceName" class="btn btn-primary">
+                    修改
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<!--重启云主机-->
+<div class="modal fade" id="resetInstancePasswordDialog1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    重置密码
+                </h4>
+            </div>
+            <div class="dialog_layer_cont">
+                <div class="act-outline" id="selectedShowWrap">
+                    <style>      .dev-bold {
+                        font-weight: bold;
+                    }
+
+                    .dev-title-col {
+                        margin-bottom: 0px !important;
+                        border-bottom: none !important;
+                    }
+
+                    .dev-content-col {
+                        margin-top: 0px !important;
+                    }    </style>
+                    <div class="act-summary">您已选 <strong> 1台 云主机 </strong></div>
+
+                    <div class="text-tips"><p>1、为了避免数据丢失，重置密码需要在<em class="text-danger">关机</em>状态下操作，云服务器将关机中断您的业务，请仔细确认
+                    </p>
+                        <p>2、强制关机可能会导致数据丢失或文件系统损坏，您也可以主动关机后进行调整配置</p>
+                        <p>3、强制关机可能需要您等待较长时间，请耐心等待</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="doForceReset">确定强制关机
+                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--重启云主机-->
+<div class="modal fade" id="resetInstancePasswordDialog2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    重置密码
+                </h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div class="pull-left col-padding"><span class="text-size-64 icon-help-2 fa fa-question-circle-o"
+                                                         style="color: #eea236;"></span></div>
+                <div class="pull-left col-padding col-sm-10">
+                    <div class="row ng-isolate-scope" batch-action-confirm-message=""
+                         selected-item="viewModel.selectedItems" config="config" columns="columns">
+                        <div class="col-sm-12" ng-class="{'text-danger': selectedItem.length > 1}"><span
+                                class="ng-binding">您所选的</span> <span style="cursor: pointer"
+                                                                     ng-click="dropdownToggle()"><span
+                                class="text-primary text-size-16 ng-binding">1</span><span
+                                class="text-primary text-size-16 ng-binding">&nbsp;个实例</span> <span
+                                ng-class="{'icon-down': !isDropdown, 'icon-up': isDropdown}" class="icon-down"
+                                data-spm-anchor-id="5176.2020520101.0.i2.53d04df5woVHNH"></span></span> <span
+                                class="ng-binding"> 将执行重置密码操作，您是否确认操作？</span></div>
+                        <div class="col-sm-12"><!-- ngIf: isDropdown --></div>
+                    </div>
+                    <form class="form-horizontal" role="form">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">登录密码:</label>
+                                <div class="col-sm-9">
+                                    <input type="password" class="form-control " id="password1" placeholder="请输入密码">
+                                    <div class="tc-15-input-tips" style="padding-top: 2px">
+                                        12到16位字符，至少包括三项（[a-z],[A-Z],[0-9]和[()`~!@#$%^&amp;*-+=_|{}[]:;'&lt;&gt;,.?/]的特殊符号），且不得包含用户名，如：“administrator”（大小写不敏感）
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">确认密码:</label>
+                                <div class="col-sm-9">
+                                    <input type="password" class="form-control " id="password2" placeholder="请确认密码">
+                                    <div id="passwordRepeatWrong" class="tc-15-input-tips"
+                                         style="padding-top: 2px; color: red" hidden>
+                                        两次输入的密码不一致，请重新输入一致的密码。
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="alert alert-warning">
+                        <p bo-text="'ecs.vm.act.dlg.stop_tips' | translate">
+                            提示：重置实例密码后，只有在控制台重启实例才能生效。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="doResetInstancePassword">确定
                 </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭
                 </button>
