@@ -2,6 +2,7 @@ package com.cmp.portal.image.controller;
 
 import com.cmp.portal.common.ResponseData;
 import com.cmp.portal.common.WebUtil;
+import com.cmp.portal.image.model.req.ReqCreImage;
 import com.cmp.portal.image.model.res.ResImageInfo;
 import com.cmp.portal.image.model.res.ResImages;
 import com.cmp.portal.image.service.ImageService;
@@ -104,6 +105,19 @@ public class ImageController {
                                     || image.getImageOwnerAlias().toLowerCase().contains("others"))
                     .collect(toList());
             return ResponseData.success(new ResImages(resImages));
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+            return ResponseData.failure(e.getMessage());
+        }
+    }
+
+    @RequestMapping("/images/create")
+    @ResponseBody
+    public ResponseData createImage(String cloudId, ReqCreImage reqCreImage) {
+        try {
+            User user = WebUtil.getCurrentUser();
+            imageService.createImage(user, cloudId, reqCreImage);
+            return ResponseData.success();
         } catch (Exception e) {
             logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
