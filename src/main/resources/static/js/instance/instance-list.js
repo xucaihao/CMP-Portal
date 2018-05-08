@@ -360,6 +360,48 @@ $(function () {
         }
     });
 
+    //确认强制关机创建镜像
+    $('#doForceCreImage').click(function () {
+        sessionStorage.forceStop = true;
+        $("#createImageDialog2").modal('show');
+        $("#createImageDialog1").modal('hide');
+    });
+
+    //确认创建镜像
+    $('#doCreImage').click(function () {
+        var imageName = $('#imageName').val();
+        var description = $('#imageDescription').val();
+        $('.portal-loading').show();
+        $("#createImageDialog2").modal('hide');
+        var data = {
+            cloudId: sessionStorage.cloudId,
+            regionId: sessionStorage.regionId,
+            instanceId: sessionStorage.instanceId,
+            imageName: imageName,
+            description: description,
+            forceStop: sessionStorage.forceStop
+        };
+        $.ajax({
+            type: "get",
+            async: true,
+            data: data,
+            url: "../images/create",
+            success: function (data, status) {
+                if (data.code === 'Success') {
+                    Ewin.showMsg('success', '镜像创建请求下发成功，请稍后到自定义镜像界面查看！');
+                    findInstances();
+                } else {
+                    Ewin.showMsg('error', data.msg);
+                }
+                $('.portal-loading').hide();
+            },
+            error: function () {
+                Ewin.showMsg('error', '镜像创建失败！');
+                $('.portal-loading').hide();
+            }
+        });
+    });
+
     // 表格中"状态"菜单栏数据格式化
     function stateFormatter(value, row, index) {
         if (row.state === true) {
@@ -392,16 +434,21 @@ $(function () {
     // 表格中"status"菜单栏数据格式化
     function statusFormatter(value, row, index) {
         var status = row.status.toLocaleLowerCase();
-        if (status == "running")
-            return '<p id="status' + index + '" class="fa fa-circle" style="color: #0C9C14;"> 运行中</p>';
-        if (status == "stopped")
-            return '<p id="status' + index + '" class="fa fa-circle" style="color: #8B91A0;"> 已停止</p> ';
-        if (status == "starting" || status == "rebooting")
-            return '<p id="status' + index + '" class="fa fa-spinner" style="color: #0C9C14;"> 启动中</p> ';
-        if (status == "pending")
-            return '<p id="status' + index + '" class="fa fa-spinner" style="color: #ff6600;"> 准备中</p> ';
-        if (status == "stopping")
-            return '<p id="status' + index + '" class="fa fa-spinner" style="color: #8B91A0;"> 停止中</p> ';
+        if (status === "running")
+            return '<a id="status' + index + '" class="fa fa-circle" style="color: #0C9C14;"></a>&nbsp;&nbsp;'
+                + '<a style="color: #0C9C14;">运行中</a>';
+        if (status === "stopped")
+            return '<a id="status' + index + '" class="fa fa-circle" style="color: #8B91A0;"></a>&nbsp;&nbsp;'
+                + '<a style="color: #8B91A0;">已停止</a>';
+        if (status === "starting" || status === "rebooting")
+            return '<a id="status' + index + '" class="fa fa-spinner fa-spin" style="color: #0C9C14;"></a>&nbsp;&nbsp;'
+                + '<a style="color: #0C9C14;">启动中</a>';
+        if (status === "pending")
+            return '<a id="status' + index + '" class="fa fa-spinner fa-spin" style="color: #ff6600;"></a>'
+                + '<a style="color: #ff6600;">准备中</a>';
+        if (status === "stopping")
+            return '<a id="status' + index + '" class="fa fa-spinner fa-spin" style="color: #8B91A0;"></a>&nbsp;&nbsp;'
+                + '<a style="color: #8B91A0;">停止中</a>';
     }
 
     // 表格中"instanceType"菜单栏数据格式化
@@ -484,10 +531,11 @@ $(function () {
             '<a class="InstanceFee  fa fa-paypal" title="续费" style="color: #0e9aef;"></a>&nbsp;&nbsp;&nbsp;',
             '<a class="dropdown fa fa-list" data-toggle="dropdown" href="#" title="更多操作" style="color: #0e9aef"></a>' +
             '<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">' +
-            '<li><a id="instanceReStart" href = "#">重启</a></li>' +
-            '<li><a id="instanceStart" href = "#">开机</a></li>' +
-            '<li><a id="instanceClose" href = "#">关机</a></li>' +
-            '<li><a id="instanceDelete" href = "#">销毁</a></li>' +
+            '<li><a id="instanceReStart" class="instanceReStart fa fa-spinner" href = "#">重启</a></li>' +
+            '<li><a id="instanceStart" class="instanceStart fa fa-play" href = "#">开机</a></li>' +
+            '<li><a id="instanceClose" class="instanceClose fa fa-power-off" href = "#">关机</a></li>' +
+            '<li><a id="instanceDelete" class="instanceDelete fa fa-trash" href = "#">销毁</a></li>' +
+            '<li><a id="instanceCreImage" class="instanceCreImage fa fa-camera-retro" href = "#">创建镜像</a></li>' +
             '</ul>'
         ].join('');
     }
@@ -509,7 +557,17 @@ window.operateEvents = {
         sessionStorage.regionId = row.regionId;
         sessionStorage.instanceId = row.instanceId;
         $("#instanceLogIn").modal('show');
+    },
+    //创建镜像
+    'click .instanceCreImage': function (e, value, row, index) {
+        var status = sessionStorage.instanceStatus;
+        sessionStorage.forceStop = false;
+        if (status === "running")
+            $("#createImageDialog1").modal('show');
+        if (status === "stopped")
+            $("#createImageDialog2").modal('show');
     }
+
 
 };
 

@@ -219,11 +219,11 @@ $(function () {
         if (status == "stopped")
             return '<p id="status' + index + '" class="fa fa-circle" style="color: #8B91A0;"> 已停止</p> ';
         if (status == "starting" || status == "rebooting")
-            return '<p id="status' + index + '" class="fa fa-spinner" style="color: #0C9C14;"> 启动中</p> ';
+            return '<p id="status' + index + '" class="fa fa-spinner fa-spin" style="color: #0C9C14;"> 启动中</p> ';
         if (status == "pending")
-            return '<p id="status' + index + '" class="fa fa-spinner" style="color: #ff6600;"> 准备中</p> ';
+            return '<p id="status' + index + '" class="fa fa-spinner fa-spin" style="color: #ff6600;"> 准备中</p> ';
         if (status == "stopping")
-            return '<p id="status' + index + '" class="fa fa-spinner" style="color: #8B91A0;"> 停止中</p> ';
+            return '<p id="status' + index + '" class="fa fa-spinner fa-spin" style="color: #8B91A0;"> 停止中</p> ';
     }
 
     // 表格中"类型"菜单栏数据格式化
