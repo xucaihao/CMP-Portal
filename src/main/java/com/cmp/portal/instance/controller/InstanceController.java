@@ -3,7 +3,10 @@ package com.cmp.portal.instance.controller;
 import com.cmp.portal.common.ResponseData;
 import com.cmp.portal.common.WebUtil;
 import com.cmp.portal.instance.model.req.ReqCloseInstance;
+import com.cmp.portal.instance.model.req.ReqModifyInstance;
+import com.cmp.portal.instance.model.req.ReqRebootInstance;
 import com.cmp.portal.instance.model.req.ReqStartInstance;
+import com.cmp.portal.instance.model.res.ResInstance;
 import com.cmp.portal.instance.model.res.ResInstances;
 import com.cmp.portal.instance.service.InstanceService;
 import com.cmp.portal.user.model.User;
@@ -61,9 +64,17 @@ public class InstanceController {
 
     @RequestMapping("/instances/{instanceId}")
     @ResponseBody
-    public ResponseData<ResInstances> describeInstance(
+    public ResponseData<ResInstance> describeInstance(
             @PathVariable String instanceId, String cloudId, String regionId) {
-        return null;
+        try {
+            User user = WebUtil.getCurrentUser();
+            ResponseEntity<ResInstance> response =
+                    instanceService.describeInstanceAttribute(user, cloudId, regionId, instanceId);
+            return ResponseData.success(response.getBody());
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+            return ResponseData.failure(e.getMessage());
+        }
     }
 
     @RequestMapping("/instances/close")
@@ -85,6 +96,45 @@ public class InstanceController {
         try {
             User user = WebUtil.getCurrentUser();
             instanceService.startInstance(user, cloudId, reqStartInstance);
+            return ResponseData.success();
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+            return ResponseData.failure(e.getMessage());
+        }
+    }
+
+    @RequestMapping("/instances/reboot")
+    @ResponseBody
+    public ResponseData rebootInstance(String cloudId, ReqRebootInstance reqRebootInstance) {
+        try {
+            User user = WebUtil.getCurrentUser();
+            instanceService.rebootInstance(user, cloudId, reqRebootInstance);
+            return ResponseData.success();
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+            return ResponseData.failure(e.getMessage());
+        }
+    }
+
+    @RequestMapping("/instances/modifyName")
+    @ResponseBody
+    public ResponseData rebootInstance(String cloudId, ReqModifyInstance reqModifyInstance) {
+        try {
+            User user = WebUtil.getCurrentUser();
+            instanceService.modifyInstanceName(user, cloudId, reqModifyInstance);
+            return ResponseData.success();
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+            return ResponseData.failure(e.getMessage());
+        }
+    }
+
+    @RequestMapping("/instances/resetPassword")
+    @ResponseBody
+    public ResponseData resetInstancesPassword(String cloudId, ReqModifyInstance reqModifyInstance) {
+        try {
+            User user = WebUtil.getCurrentUser();
+            instanceService.resetInstancesPassword(user, cloudId, reqModifyInstance);
             return ResponseData.success();
         } catch (Exception e) {
             logger.info(e.getMessage());

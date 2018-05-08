@@ -25,6 +25,8 @@ public class User {
 
     private String localIp;
 
+    private boolean online;
+
     public String getUserId() {
         return userId;
     }
@@ -95,5 +97,13 @@ public class User {
 
     public void setLocalIp(String localIp) {
         this.localIp = localIp;
+    }
+
+    public boolean isOnline() {
+        return online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
     }
 }

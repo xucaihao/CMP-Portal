@@ -51,7 +51,7 @@ $(function () {
         }
     ];
     $("#snapshotsTable").bootstrapTable({
-        showRefresh: true,                  //是否显示刷新按钮
+        showRefresh: false,                  //是否显示刷新按钮
         showPaginationSwitch: true,       //是否显示选择分页数按钮
         columns: columns,
         pagination: true,//是否开启分页（*）
@@ -76,10 +76,10 @@ $(function () {
                     $('.portal-loading').hide();
                 } else {
                     $('.portal-loading').hide();
-                    if (data.message == null || data.message === "")
+                    if (data.msg == null || data.msg === "")
                         Ewin.showMsg('error', '查询快照列表失败！');
                     else
-                        Ewin.showMsg('error', data.message);
+                        Ewin.showMsg('error', data.msg);
                     $(".modal-backdrop").remove();
                 }
             },
@@ -90,6 +90,11 @@ $(function () {
             }
         });
     }
+
+    //刷新快照列表
+    $('#btn_refreshSnapshots').click(function () {
+        findSnapshots();
+    });
 
     // 表格中"状态"菜单栏数据格式化
     function stateFormatter(value, row, index) {
@@ -112,7 +117,7 @@ $(function () {
         sessionStorage.sourceDiskId = row.sourceDiskId;
         sessionStorage.regionId = row.regionId;
         sessionStorage.cloudId = row.cloudId;
-        return '<a id="sourceDiskId' + index + '" href="../volumeDetailPage" style="margin: 0 auto">' + row.sourceDiskId + ' </a>';
+        return '<a id="sourceDiskId' + index + '" href="../diskDetailPage" style="margin: 0 auto">' + row.sourceDiskId + ' </a>';
     }
 
     // 表格中"磁盘ID"菜单栏数据格式化
@@ -120,9 +125,9 @@ $(function () {
         var sourceDiskType = row.sourceDiskType.toLowerCase();
         var res = "---";
         if (sourceDiskType === "system" || sourceDiskType === "root")
-            res = '<a id="sourceDiskType' + index + '"> 系统盘 </a>';
+            res = '<p id="sourceDiskType' + index + '"> 系统盘 </p>';
         if (sourceDiskType === "data")
-            res = '<a id="sourceDiskType' + index + '"> 数据盘 </a>';
+            res = '<p id="sourceDiskType' + index + '"> 数据盘 </p>';
         return res;
     }
 

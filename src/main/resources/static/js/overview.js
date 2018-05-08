@@ -15,10 +15,10 @@ $(function () {
                     $("#instanceNum").text(instanceNum);
                 } else {
                     $('.portal-loading').hide();
-                    if (data.message == null || data.message === "")
+                    if (data.msg == null || data.msg === "")
                         Ewin.showMsg('error', '查询主机列表失败！');
                     else
-                        Ewin.showMsg('error', data.message);
+                        Ewin.showMsg('error', data.msg);
                     $(".modal-backdrop").remove();
                 }
             },
