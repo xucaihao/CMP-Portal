@@ -2,6 +2,7 @@ package com.cmp.portal.snapshot.controller;
 
 import com.cmp.portal.common.ResponseData;
 import com.cmp.portal.common.WebUtil;
+import com.cmp.portal.snapshot.model.req.ReqCreSnapshot;
 import com.cmp.portal.snapshot.model.res.ResSnapshots;
 import com.cmp.portal.snapshot.service.SnapshotService;
 import com.cmp.portal.user.model.User;
@@ -47,6 +48,19 @@ public class SnapshotController {
             User user = WebUtil.getCurrentUser();
             ResponseEntity<ResSnapshots> response = snapshotService.describeSnapshots(user, cloudId);
             return ResponseData.success(response.getBody());
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+            return ResponseData.failure(e.getMessage());
+        }
+    }
+
+    @RequestMapping("/snapshots/create")
+    @ResponseBody
+    public ResponseData createImage(String cloudId, ReqCreSnapshot reqCreSnapshot) {
+        try {
+            User user = WebUtil.getCurrentUser();
+            snapshotService.createSnapshot(user, cloudId, reqCreSnapshot);
+            return ResponseData.success();
         } catch (Exception e) {
             logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
