@@ -2,6 +2,7 @@ package com.cmp.portal.disk.controller;
 
 import com.cmp.portal.common.ResponseData;
 import com.cmp.portal.common.WebUtil;
+import com.cmp.portal.disk.model.req.ReqModifyDisk;
 import com.cmp.portal.disk.model.res.ResDisks;
 import com.cmp.portal.disk.service.DiskService;
 import com.cmp.portal.user.model.User;
@@ -47,6 +48,19 @@ public class DiskController {
             User user = WebUtil.getCurrentUser();
             ResponseEntity<ResDisks> response = diskService.describeDisks(user, cloudId);
             return ResponseData.success(response.getBody());
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+            return ResponseData.failure(e.getMessage());
+        }
+    }
+
+    @RequestMapping("/disks/modifyName")
+    @ResponseBody
+    public ResponseData modifyDiskName(String cloudId, ReqModifyDisk reqModifyDisk) {
+        try {
+            User user = WebUtil.getCurrentUser();
+            diskService.modifyDiskName(user, cloudId, reqModifyDisk);
+            return ResponseData.success();
         } catch (Exception e) {
             logger.info(e.getMessage());
             return ResponseData.failure(e.getMessage());
