@@ -435,20 +435,20 @@ $(function () {
     function statusFormatter(value, row, index) {
         var status = row.status.toLocaleLowerCase();
         if (status === "running")
-            return '<a id="status' + index + '" class="fa fa-circle" style="color: #0C9C14;"></a>&nbsp;&nbsp;'
-                + '<a style="color: #0C9C14;">运行中</a>';
+            return '<span id="status' + index + '" class="fa fa-circle" style="color: #0C9C14;"></span>&nbsp;&nbsp;'
+                + '<span style="color: #0C9C14;">运行中</span>';
         if (status === "stopped")
-            return '<a id="status' + index + '" class="fa fa-circle" style="color: #8B91A0;"></a>&nbsp;&nbsp;'
-                + '<a style="color: #8B91A0;">已停止</a>';
+            return '<span id="status' + index + '" class="fa fa-circle" style="color: #8B91A0;"></span>&nbsp;&nbsp;'
+                + '<span style="color: #8B91A0;">已停止</span>';
         if (status === "starting" || status === "rebooting")
-            return '<a id="status' + index + '" class="fa fa-spinner fa-spin" style="color: #0C9C14;"></a>&nbsp;&nbsp;'
-                + '<a style="color: #0C9C14;">启动中</a>';
+            return '<span id="status' + index + '" class="fa fa-spinner fa-spin" style="color: #0C9C14;"></span>&nbsp;&nbsp;'
+                + '<span style="color: #0C9C14;">启动中</span>';
         if (status === "pending")
-            return '<a id="status' + index + '" class="fa fa-spinner fa-spin" style="color: #ff6600;"></a>'
-                + '<a style="color: #ff6600;">准备中</a>';
+            return '<span id="status' + index + '" class="fa fa-spinner fa-spin" style="color: #ff6600;"></span>'
+                + '<span style="color: #ff6600;">准备中</span>';
         if (status === "stopping")
-            return '<a id="status' + index + '" class="fa fa-spinner fa-spin" style="color: #8B91A0;"></a>&nbsp;&nbsp;'
-                + '<a style="color: #8B91A0;">停止中</a>';
+            return '<span id="status' + index + '" class="fa fa-spinner fa-spin" style="color: #8B91A0;"></span>&nbsp;&nbsp;'
+                + '<span style="color: #8B91A0;">停止中</span>';
     }
 
     // 表格中"instanceType"菜单栏数据格式化

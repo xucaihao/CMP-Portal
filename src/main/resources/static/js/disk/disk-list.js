@@ -73,7 +73,19 @@ $(function () {
         pageList: [5, 10, 15],//可供选择的每页的行数（*）
         sidePagination: "client", //分页方式：client客户端分页，server服务端分页（*）
         search: true,
-        toolbar: "#disksToolbar"
+        toolbar: "#disksToolbar",
+        onCheck: function (row) {
+            sessionStorage.diskId = row.diskId;
+            sessionStorage.regionId = row.regionId;
+            sessionStorage.cloudId = row.cloudId;
+            sessionStorage.status = row.status.toLowerCase();
+        },
+        onCheckAll: function (rows) {
+            var selectedDisks = $("#disksTable").bootstrapTable("getSelections");
+        },
+        onUncheck: function () {
+            var selectedDisks = $("#disksTable").bootstrapTable("getSelections");
+        }
     });
 
     function findDisks() {
@@ -141,6 +153,38 @@ $(function () {
         });
     });
 
+    //确认创建快照
+    $('#doCreSnapshot').click(function () {
+        $("#createSnapshotInDiskDialog").modal('hide');
+        $('.portal-loading').show();
+        var data = {
+            cloudId: sessionStorage.cloudId,
+            regionId: sessionStorage.regionId,
+            diskId: sessionStorage.diskId,
+            snapshotName: $('#createSnapshot-snapshotName').val()
+        };
+        $.ajax({
+            type: "get",
+            async: true,
+            data: data,
+            url: "../snapshots/create",
+            success: function (data, status) {
+                debugger
+                if (data.code === 'Success') {
+                    Ewin.showMsg('success', '快照创建成功，请稍后到快照界面查看！');
+                    findDisks();
+                } else {
+                    Ewin.showMsg('error', data.msg);
+                }
+                $('.portal-loading').hide();
+            },
+            error: function () {
+                Ewin.showMsg('error', '快照创建失败！');
+                $('.portal-loading').hide();
+            }
+        });
+    });
+
     // 表格中"状态"菜单栏数据格式化
     function stateFormatter(value, row, index) {
         if (row.state == true)
@@ -167,13 +211,17 @@ $(function () {
         var instanceId = row.instanceId;
         var response = status;
         if (instanceId != null && instanceId !== "")
-            response = '<p id="status' + index + '" style="color: #0C9C14;"> 使用中</p>';
+            response = '<span id="status' + index + '" style="color: #0C9C14;"></span>&nbsp;&nbsp;'
+                + '<span style="color: #0C9C14;">使用中</span>';
         else if (status === "available" || status === "normal")
-            response = '<p id="status' + index + '" style="color: #ff6600;"> 待挂载</p>';
+            response = '<span id="status' + index + '" style="color: #ff6600;"></span>&nbsp;&nbsp;'
+                + '<span style="color: #ff6600;">待挂载</span>';
         else if (status === "attaching")
-            response = '<p id="status' + index + '" class="fa fa-spinner" style="color: #0C9C14;"> 挂载中</p>';
+            response = '<span id="status' + index + '" class="fa fa-spinner fa-spin" style="color: #0C9C14;"></span>&nbsp;&nbsp;'
+                + '<span style="color: #0C9C14;">挂载中</span>';
         else if (status === "detaching")
-            response = '<p id="status' + index + '" class="fa fa-spinner" style="color: #ff6600;"> 卸载中</p>';
+            response = '<span id="status' + index + '" class="fa fa-spinner fa-spin" style="color: #ff6600;"></span>&nbsp;&nbsp;'
+                + '<span style="color: #ff6600;">卸载中</span>';
         return response;
     }
 
@@ -238,7 +286,7 @@ $(function () {
 
     function operateFormatter(value, row, index) {
         return '<div>' +
-            '<a class="CreateSnapshotInDisk fa fa-plus-square-o" title="创建快照" style="color: #0e9aef;"></a>&nbsp;&nbsp;&nbsp;' +
+            '<a class="CreateSnapshotInDisk fa fa-camera" title="创建快照" style="color: #0e9aef;"></a>&nbsp;&nbsp;&nbsp;' +
             '<a class="dropdown fa fa-list" data-toggle="dropdown" href="#" title="更多操作" style="color: #0e9aef"></a>' +
             '<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">' +
             '<li><a href = "#">挂载</a></li>' +
@@ -258,4 +306,19 @@ window.operateEvents = {
         $('#modifyDiskName').val(row.diskName);
         $("#modifyDiskNameDialog").modal('show');
     },
+    //创建快照
+    'click .CreateSnapshotInDisk': function (e, value, row, index) {
+        $('#createSnapshot-diskId').html(row.diskId);
+        $('#createSnapshot-diskName').html(row.diskName);
+        $('#createSnapshot-diskSize').html(row.size + "GB");
+        debugger
+        var category = row.category.toLowerCase();
+        if (category === "cloud" || category === "cloudbasic")
+            $('#createSnapshot-category').html("普通云盘");
+        if (category === "cloud_efficiency" || category === "cloudpremium")
+            $('#createSnapshot-category').html("高效云盘");
+        if (category === "cloud_ssd" || category === "cloudssd")
+            $('#createSnapshot-category').html("SSD云盘");
+        $("#createSnapshotInDiskDialog").modal('show');
+    }
 };
