@@ -531,11 +531,11 @@ $(function () {
             '<a class="InstanceFee  fa fa-paypal" title="续费" style="color: #0e9aef;"></a>&nbsp;&nbsp;&nbsp;',
             '<a class="dropdown fa fa-list" data-toggle="dropdown" href="#" title="更多操作" style="color: #0e9aef"></a>' +
             '<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">' +
-            '<li><a id="instanceReStart" class="instanceReStart fa fa-spinner" href = "#">重启</a></li>' +
-            '<li><a id="instanceStart" class="instanceStart fa fa-play" href = "#">开机</a></li>' +
-            '<li><a id="instanceClose" class="instanceClose fa fa-power-off" href = "#">关机</a></li>' +
-            '<li><a id="instanceDelete" class="instanceDelete fa fa-trash" href = "#">销毁</a></li>' +
-            '<li><a id="instanceCreImage" class="instanceCreImage fa fa-camera-retro" href = "#">创建镜像</a></li>' +
+            '<li class="instanceReStart"><a id="instanceReStart" class="fa fa-spinner" href = "#">&nbsp;&nbsp;  重启</a></li>' +
+            '<li class="instanceStart"><a id="instanceStart" class="fa fa-play" href = "#">&nbsp;&nbsp;  开机</a></li>' +
+            '<li class="instanceClose"><a id="instanceClose" class="fa fa-power-off" href = "#">&nbsp;&nbsp;  关机</a></li>' +
+            '<li class="instanceDelete"><a id="instanceDelete" class="fa fa-trash" href = "#">&nbsp;&nbsp;  销毁</a></li>' +
+            '<li class="instanceCreImage"><a id="instanceCreImage" class="fa fa-camera-retro" href = "#">&nbsp;&nbsp;  创建镜像</a></li>' +
             '</ul>'
         ].join('');
     }

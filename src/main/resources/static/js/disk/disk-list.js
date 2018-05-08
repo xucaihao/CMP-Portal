@@ -211,10 +211,10 @@ $(function () {
         var instanceId = row.instanceId;
         var response = status;
         if (instanceId != null && instanceId !== "")
-            response = '<span id="status' + index + '" style="color: #0C9C14;"></span>&nbsp;&nbsp;'
+            response = '<span id="status' + index + '" class="fa fa-circle" style="color: #0C9C14;"></span>&nbsp;&nbsp;'
                 + '<span style="color: #0C9C14;">使用中</span>';
         else if (status === "available" || status === "normal")
-            response = '<span id="status' + index + '" style="color: #ff6600;"></span>&nbsp;&nbsp;'
+            response = '<span id="status' + index + '" class="fa fa-circle" style="color: #ff6600;"></span>&nbsp;&nbsp;'
                 + '<span style="color: #ff6600;">待挂载</span>';
         else if (status === "attaching")
             response = '<span id="status' + index + '" class="fa fa-spinner fa-spin" style="color: #0C9C14;"></span>&nbsp;&nbsp;'
