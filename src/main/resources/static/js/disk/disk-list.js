@@ -18,6 +18,7 @@ $(function () {
         {
             field: 'diskId',
             title: 'ID/硬盘名',
+            events: operateEvents,
             formatter: idNameFormatter
         },
         {
@@ -108,6 +109,38 @@ $(function () {
         findDisks();
     });
 
+    //确认修改硬盘名称
+    $('#btn_modifyDiskName').click(function () {
+        $("#modifyDiskNameDialog").modal('hide');
+        $('.portal-loading').show();
+        var data = {
+            cloudId: sessionStorage.cloudId,
+            regionId: sessionStorage.regionId,
+            diskId: sessionStorage.diskId,
+            diskName: $('#modifyDiskName').val()
+        };
+        $.ajax({
+            type: "get",
+            async: true,
+            data: data,
+            url: "../disks/modifyName",
+            success: function (data, status) {
+                debugger
+                if (data.code === 'Success') {
+                    Ewin.showMsg('success', '修改成功！');
+                    findDisks();
+                } else {
+                    Ewin.showMsg('error', data.msg);
+                }
+                $('.portal-loading').hide();
+            },
+            error: function () {
+                Ewin.showMsg('error', '修改失败！');
+                $('.portal-loading').hide();
+            }
+        });
+    });
+
     // 表格中"状态"菜单栏数据格式化
     function stateFormatter(value, row, index) {
         if (row.state == true)
@@ -123,8 +156,9 @@ $(function () {
         sessionStorage.diskId = row.diskId;
         sessionStorage.regionId = row.regionId;
         sessionStorage.cloudId = row.cloudId;
-        return '<a id="diskId' + index + '" href="../diskDetailPage">' + row.diskId + ' </a>'
-            + '<p>' + row.diskName + '</p>';
+        return '<a id="diskId' + index + '" href="../diskDetailPage">' + row.diskId + ' </a><br/>'
+            + row.diskName + '&nbsp;&nbsp;'
+            + '<a class="modifyDiskName fa fa-edit" style="color: #2A2E36"></a>';
     }
 
     // 表格中"status"菜单栏数据格式化
@@ -216,8 +250,12 @@ $(function () {
 
 });
 window.operateEvents = {
-    // //更多操作下拉框
-    // 'click .DiskMorkOpera': function (e, value, row, index) {
-    //     $("#MoreOperaInDiskList").modal('show');
-    // }
+    //修改硬盘名称
+    'click .modifyDiskName': function (e, value, row, index) {
+        sessionStorage.cloudId = row.cloudId;
+        sessionStorage.regionId = row.regionId;
+        sessionStorage.diskId = row.diskId;
+        $('#modifyDiskName').val(row.diskName);
+        $("#modifyDiskNameDialog").modal('show');
+    },
 };

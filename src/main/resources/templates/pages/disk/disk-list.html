@@ -76,6 +76,36 @@
     </div>
 </div>
 
+<!--修改云硬盘名称-->
+<div class="modal fade" id="modifyDiskNameDialog" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title fa fa-edit" style="font-size: 20px">
+                    修改硬盘名称
+                </h4>
+            </div>
+            <form class="form-horizontal" role="form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">硬盘新名称:</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control " id="modifyDiskName" placeholder="请输入名称">
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                </button>
+                <button type="button" id="btn_modifyDiskName" class="btn btn-primary">
+                    修改
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
 <div class="portal-loading">
     <div class="object"></div>
     <div class="object"></div>
