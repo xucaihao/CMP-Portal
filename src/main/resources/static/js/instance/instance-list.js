@@ -59,6 +59,7 @@ $(function () {
             title: '操作',
             align: 'center',
             events: operateEvents,
+            width: '100px',
             formatter: operateFormatter
         }
     ];
@@ -402,6 +403,38 @@ $(function () {
         });
     });
 
+    $().ready(function () {
+    // 在键盘按下并释放及提交后验证提交表单
+        $("#resetPasswordForm").validate({
+            rules: {
+                password1: {
+                    required: true,
+                    minlength: 12
+                },
+                password2: {
+                    required: true,
+                    minlength: 12,
+                    equalTo: "#password1"
+                }
+            },
+            messages: {
+                password1: {
+                    required: "请输入密码",
+                    minlength: "密码长度不能小于 12 个字符"
+                },
+                password2: {
+                    required: "请确认密码",
+                    minlength: "密码长度不能小于 12 个字符",
+                    equalTo: "两次密码输入不一致"
+                }
+            },
+        })
+    });
+
+    $.validator.setDefaults({
+        submitHandler: function(form) {form.submit(); }
+    });
+
     // 表格中"状态"菜单栏数据格式化
     function stateFormatter(value, row, index) {
         if (row.state === true) {
@@ -524,19 +557,22 @@ $(function () {
         // op.push('<li><a id="instanceStart" href = "#">开机</a></li>');
         // op.push('<li><a id="instanceClose" href = "#">关机</a></li>');
         // op.push('<li><a id="instanceDelete" href = "#">销毁</a></li>');
+
         return [
             row.status.toLowerCase() !== "running" ?
                 ('<a class="InstanceLogInBlack fa fa-tv" title="请确认云主机处于运行状态" style="color: #5E5E5E"></a>&nbsp;&nbsp;&nbsp;')
                 : ('<a class="InstanceLogInBule fa fa-tv" title="登录" style="color: #0e9aef;"></a>&nbsp;&nbsp;&nbsp;'),
             '<a class="InstanceFee  fa fa-paypal" title="续费" style="color: #0e9aef;"></a>&nbsp;&nbsp;&nbsp;',
-            '<a class="dropdown fa fa-list" data-toggle="dropdown" href="#" title="更多操作" style="color: #0e9aef"></a>' +
-            '<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">' +
+
+            '<a class="dropdown fa fa-list" id="xxx" data-toggle="dropdown" href="#" title="更多操作" style="color: #0e9aef"></a>' +
+            '<ul class="dropdown-menu" style="position: absolute" role="menu" aria-labelledby="xxx">' +
             '<li class="instanceReStart"><a id="instanceReStart" class="fa fa-spinner" href = "#">&nbsp;&nbsp;  重启</a></li>' +
             '<li class="instanceStart"><a id="instanceStart" class="fa fa-play" href = "#">&nbsp;&nbsp;  开机</a></li>' +
             '<li class="instanceClose"><a id="instanceClose" class="fa fa-power-off" href = "#">&nbsp;&nbsp;  关机</a></li>' +
             '<li class="instanceDelete"><a id="instanceDelete" class="fa fa-trash" href = "#">&nbsp;&nbsp;  销毁</a></li>' +
             '<li class="instanceCreImage"><a id="instanceCreImage" class="fa fa-camera-retro" href = "#">&nbsp;&nbsp;  创建镜像</a></li>' +
             '</ul>'
+
         ].join('');
     }
 
