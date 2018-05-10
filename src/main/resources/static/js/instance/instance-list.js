@@ -403,37 +403,40 @@ $(function () {
         });
     });
 
-    $().ready(function () {
+    // $().ready(function () {
     // 在键盘按下并释放及提交后验证提交表单
-        $("#resetPasswordForm").validate({
-            rules: {
-                password1: {
-                    required: true,
-                    minlength: 12
-                },
-                password2: {
-                    required: true,
-                    minlength: 12,
-                    equalTo: "#password1"
-                }
+    $("#resetPasswordForm").validate({
+        submitHandler: function (form) {
+            alert('ok');
+        },
+        rules: {
+            password1: {
+                required: true,
+                minlength: 12
             },
-            messages: {
-                password1: {
-                    required: "请输入密码",
-                    minlength: "密码长度不能小于 12 个字符"
-                },
-                password2: {
-                    required: "请确认密码",
-                    minlength: "密码长度不能小于 12 个字符",
-                    equalTo: "两次密码输入不一致"
-                }
+            password2: {
+                required: true,
+                minlength: 12,
+                equalTo: "#password1"
+            }
+        },
+        messages: {
+            password1: {
+                required: "请输入密码",
+                minlength: "密码长度不能小于 12 个字符"
             },
-        })
-    });
+            password2: {
+                required: "请确认密码",
+                minlength: "密码长度不能小于 12 个字符",
+                equalTo: "两次密码输入不一致"
+            }
+        },
+    })
+    // });
 
-    $.validator.setDefaults({
-        submitHandler: function(form) {form.submit(); }
-    });
+    // $.validator.setDefaults({
+    //     submitHandler: function(form) {form.submit(); }
+    // });
 
     // 表格中"状态"菜单栏数据格式化
     function stateFormatter(value, row, index) {
